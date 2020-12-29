@@ -17,7 +17,6 @@ public class Main {
         generateSecretCode(digits, secretCode);
         System.out.println("Okay, let's start a game!");
         int turns = 1;
-
         eachTurnOfPlay(scanner, answer, secretCode, turns);
     }
 
@@ -61,7 +60,7 @@ public class Main {
 
     private static void generateSecretCode(int digits, StringBuilder code) {
         while (digits > 0) {
-            int digit = (int) (System.nanoTime() % 10);
+            int digit = (int) (Math.random() * 10 % 10.0);
             if (!code.toString().contains(String.valueOf(digit))) {
                 code.append(digit);
                 digits--;
