@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+<<<<<<< HEAD
         System.out.println("Input the length of the secret code:");
         Scanner scanner = new Scanner(System.in);
         int digits = scanner.nextInt();
@@ -19,6 +20,25 @@ public class Main {
 
     private static void eachTurnOfPlay(Scanner scanner, String answer, StringBuilder secretCode, int digits) {
         int turns = 1;
+=======
+        System.out.println("Please, enter the secret code's length:");
+        Scanner scanner = new Scanner(System.in);
+        int digits =  scanner.nextInt();
+        if (digits > 10) {
+            System.out.println("Error: can't generate a secret number with a length of 11 because there aren't enough unique digits.");
+            return;
+        }
+        scanner.nextLine();
+        String answer = "";
+        StringBuilder secretCode = new StringBuilder();
+        generateSecretCode(digits, secretCode);
+        System.out.println("Okay, let's start a game!");
+        int turns = 1;
+        eachTurnOfPlay(scanner, answer, secretCode, turns);
+    }
+
+    private static void eachTurnOfPlay(Scanner scanner, String answer, StringBuilder secretCode, int turns) {
+>>>>>>> 5fd3d537bb01adae154f885cee228e785ba28b2b
         while (answer.compareTo(secretCode.toString()) != 0) {
             System.out.println("Turn " + turns +". Answer:");
             answer = scanner.nextLine();
@@ -56,6 +76,7 @@ public class Main {
         }
     }
 
+<<<<<<< HEAD
     private static void generateSecretCode(int digits, int range, StringBuilder code) {
         char[] fullSet = "0123456789abcdefghijklmnopqrstuvwxyz".toCharArray();
         System.out.print("The secret is prepared: "+ "*".repeat(digits));
@@ -72,6 +93,13 @@ public class Main {
             int index = (int) (Math.random() * 100.0 % range);
             if (!code.toString().contains(String.valueOf(fullSet[index]))) {
                 code.append(fullSet[index]);
+=======
+    private static void generateSecretCode(int digits, StringBuilder code) {
+        while (digits > 0) {
+            int digit = (int) (Math.random() * 10 % 10.0);
+            if (!code.toString().contains(String.valueOf(digit))) {
+                code.append(digit);
+>>>>>>> 5fd3d537bb01adae154f885cee228e785ba28b2b
                 digits--;
             }
         }
