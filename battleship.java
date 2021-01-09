@@ -161,6 +161,16 @@ public class Main {
         int tailX = Integer.parseInt(buf[1].substring(1)) - 1;
         int headY = buf[0].charAt(0) - 'A';
         int tailY = buf[1].charAt(0) - 'A';
+        if (headX > tailX) {
+            int temp = headX;
+            headX = tailX;
+            tailX = temp;
+        }
+        if (headY > tailY) {
+            int temp = headY;
+            headY = tailY;
+            tailY = temp;
+        }
         boolean result = false;
         for (int i = headX - 1; i <= tailX + 1; i++) {
             if (i < 0 || i >= size) {
