@@ -57,7 +57,7 @@ public class Main {
     }
 
     private static int placeDestroyer(char[][] battleField, String[] buf) {
-        if (!inputCheck(buf, 2)) {
+        if (inputCheck(buf, 2)) {
             System.out.println("Error! Wrong input of Destroyer! Try again:");
             return 4;
         } else if (positionAdjustOrOccupied(battleField, buf)) {
@@ -71,7 +71,7 @@ public class Main {
     }
 
     private static int placeCruiser(char[][] battleField, String[] buf) {
-        if (!inputCheck(buf, 3)) {
+        if (inputCheck(buf, 3)) {
             System.out.println("Error! Wrong input of Cruiser! Try again:");
             return 3;
         } else if (positionAdjustOrOccupied(battleField, buf)) {
@@ -85,7 +85,7 @@ public class Main {
     }
 
     private static int placeSubmarine(char[][] battleField, String[] buf) {
-        if (!inputCheck(buf, 3)) {
+        if (inputCheck(buf, 3)) {
             System.out.println("Error! Wrong input of Submarine! Try again:");
             return 2;
         } else if (positionAdjustOrOccupied(battleField, buf)) {
@@ -99,7 +99,7 @@ public class Main {
     }
 
     private static int placeBattleship(char[][] battleField, String[] buf) {
-        if (!inputCheck(buf, 4)) {
+        if (inputCheck(buf, 4)) {
             System.out.println("Error! Wrong input of Battleship! Try again:");
             return 1;
         } else if (positionAdjustOrOccupied(battleField, buf)) {
@@ -113,7 +113,7 @@ public class Main {
     }
 
     private static int placeAircraftCarrier(char[][] battleField, String[] buf) {
-        if (!inputCheck(buf, 5)) {
+        if (inputCheck(buf, 5)) {
             System.out.println("Error! Wrong input of Aircraft Carrier! Try again:");
             return 0;
         } else if (positionAdjustOrOccupied(battleField, buf)) {
@@ -127,7 +127,6 @@ public class Main {
     }
 
     private static void updateBattleField(char[][] battleField, String[] buf) {
-        final int size = 10;
         int headX = Integer.parseInt(buf[0].substring(1)) - 1;
         int tailX = Integer.parseInt(buf[1].substring(1)) - 1;
         int headY = buf[0].charAt(0) - 'A';
@@ -189,34 +188,34 @@ public class Main {
             tailX = Integer.parseInt(buf[1].substring(1));
         }
         catch (NumberFormatException ex) {
-            return false;
+            return true;
         }
         char headY = buf[0].charAt(0);
         char tailY = buf[1].charAt(0);
         if (buf.length != 2) {
             // Must be 2 coordinates
-            return false;
+            return true;
         } else if (headY < 'A' || headY > 'J'
                 || tailY < 'A' || tailY > 'J') {
             // Wrong Y
-            return false;
+            return true;
         } else if (headX < 1 || headX > 10
                 || tailX < 1 || tailX > 10) {
             // Wrong X
-            return false;
+            return true;
         } else if (Math.abs(headX - tailX) + 1 != shipLength
                 && Math.abs(headY - tailY) + 1 != shipLength) {
             // Wrong length of Ship
-            return false;
+            return true;
         }
         else if (buf[0].compareTo(buf[1]) == 0) {
             // Two coordinates are the same
-            return false;
+            return true;
         } else if (headY != tailY && headX != tailX) {
             // Neither horizontal nor vertical
-            return false;
-        } else {
             return true;
+        } else {
+            return false;
         }
     }
 
@@ -240,5 +239,4 @@ public class Main {
             System.out.println();
         }
     }
-
 }
