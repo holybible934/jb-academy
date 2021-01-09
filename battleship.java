@@ -30,29 +30,85 @@ public class Main {
                     }
                     break;
                 case 1:
-                    allocPhase = 2;
+                    allocPhase = placeBattleship(battleField, buf);
                     if (allocPhase == 2) {
                         System.out.println("Enter the coordinates of the Submarine (3 cells):");
                     }
                     break;
                 case 2:
-                    allocPhase = 3;
+                    allocPhase = placeSubmarine(battleField, buf);
                     if (allocPhase == 3) {
                         System.out.println("Enter the coordinates of the Cruiser (3 cells):");
                     }
                     break;
                 case 3:
-                    allocPhase = 4;
+                    allocPhase = placeCruiser(battleField, buf);
                     if (allocPhase == 4) {
                         System.out.println("Enter the coordinates of the Destroyer (2 cells):");
                     }
                     break;
                 case 4:
-                    allocPhase = 5;
+                    allocPhase = placeDestroyer(battleField, buf);
                     break;
                 default:
             }
             buf = scanner.nextLine().toUpperCase(Locale.ROOT).split(" ");
+        }
+    }
+
+    private static int placeDestroyer(char[][] battleField, String[] buf) {
+        if (!inputCheck(buf, 2)) {
+            System.out.println("Error! Wrong input of Destroyer! Try again:");
+            return 4;
+        } else if (positionAdjustOrOccupied(battleField, buf)) {
+            System.out.println("Error! You placed it wrongly or too close to another one. Try again:");
+            return 4;
+        } else {
+            updateBattleField(battleField, buf);
+            printBattleField(10, battleField);
+            return 5;
+        }
+    }
+
+    private static int placeCruiser(char[][] battleField, String[] buf) {
+        if (!inputCheck(buf, 3)) {
+            System.out.println("Error! Wrong input of Cruiser! Try again:");
+            return 3;
+        } else if (positionAdjustOrOccupied(battleField, buf)) {
+            System.out.println("Error! You placed it wrongly or too close to another one. Try again:");
+            return 3;
+        } else {
+            updateBattleField(battleField, buf);
+            printBattleField(10, battleField);
+            return 4;
+        }
+    }
+
+    private static int placeSubmarine(char[][] battleField, String[] buf) {
+        if (!inputCheck(buf, 3)) {
+            System.out.println("Error! Wrong input of Submarine! Try again:");
+            return 2;
+        } else if (positionAdjustOrOccupied(battleField, buf)) {
+            System.out.println("Error! You placed it wrongly or too close to another one. Try again:");
+            return 2;
+        } else {
+            updateBattleField(battleField, buf);
+            printBattleField(10, battleField);
+            return 3;
+        }
+    }
+
+    private static int placeBattleship(char[][] battleField, String[] buf) {
+        if (!inputCheck(buf, 4)) {
+            System.out.println("Error! Wrong input of Battleship! Try again:");
+            return 1;
+        } else if (positionAdjustOrOccupied(battleField, buf)) {
+            System.out.println("Error! You placed it wrongly or too close to another one. Try again:");
+            return 1;
+        } else {
+            updateBattleField(battleField, buf);
+            printBattleField(10, battleField);
+            return 2;
         }
     }
 
@@ -72,8 +128,8 @@ public class Main {
 
     private static void updateBattleField(char[][] battleField, String[] buf) {
         final int size = 10;
-        int headX = Integer.parseInt(buf[0].substring(1));
-        int tailX = Integer.parseInt(buf[1].substring(1));
+        int headX = Integer.parseInt(buf[0].substring(1)) - 1;
+        int tailX = Integer.parseInt(buf[1].substring(1)) - 1;
         int headY = buf[0].charAt(0) - 'A';
         int tailY = buf[1].charAt(0) - 'A';
         if (headX == tailX) {
@@ -97,12 +153,12 @@ public class Main {
         int headY = buf[0].charAt(0) - 'A';
         int tailY = buf[1].charAt(0) - 'A';
         boolean result = false;
-        for (int i = headX - 1; i <= headX + 1; i++) {
-            if (i < 0 || i > size) {
+        for (int i = headX - 1; i <= tailX + 1; i++) {
+            if (i < 0 || i >= size) {
             }
             else {
                 for (int j = headY - 1; j <= tailY + 1; j++) {
-                    if (j < 0 || j > size) {
+                    if (j < 0 || j >= size) {
                     }
                     else {
                         if (battleField[j][i] != '~') {
