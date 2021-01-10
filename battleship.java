@@ -55,6 +55,35 @@ public class Main {
             }
             buf = scanner.nextLine().toUpperCase(Locale.ROOT).split(" ");
         }
+        // The game starts
+        System.out.println("The game starts!");
+        printBattleField(border, battleField);
+
+        // Take a shot
+        System.out.println("Take a shot!");
+        boolean shotNotFinished = true;
+        while (shotNotFinished) {
+            String target = scanner.nextLine();
+            shotNotFinished = takeAShot(target, battleField);
+        }
+    }
+
+    private static boolean takeAShot(String target, char[][] battleField) {
+        int targetX = Integer.parseInt(target.substring(1)) - 1;
+        int targetY = target.charAt(0) - 'A';
+        final int border = battleField.length - 1;
+        if (targetX < 0 || targetX > border || targetY < 0 || targetY > border) {
+          System.out.println("Error! You entered the wrong coordinates! Try again:");
+          return true;
+        } else if (battleField[targetY][targetX] == '~') {
+            battleField[targetY][targetX] = 'M';
+            System.out.println("You missed!");
+        } else {
+            battleField[targetY][targetX] = 'X';
+            System.out.println("You hit a ship!");
+        }
+        printBattleField(battleField.length, battleField);
+        return false;
     }
 
     private static int placeDestroyer(char[][] battleField, String[] buf) {
