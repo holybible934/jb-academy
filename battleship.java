@@ -20,8 +20,9 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         int allocPhase = 0;
         System.out.println("Enter the coordinates of the Aircraft Carrier (5 cells):");
-        String[] buf = scanner.nextLine().toUpperCase(Locale.ROOT).split(" ");
+        String[] buf;
         while (allocPhase < 5) {
+            buf = scanner.nextLine().toUpperCase(Locale.ROOT).split(" ");
             switch (allocPhase) {
                 case 0:
                     allocPhase = placeAircraftCarrier(battleField, buf);
@@ -93,7 +94,7 @@ public class Main {
             return 2;
         } else {
             updateBattleField(battleField, buf);
-            printBattleField(10, battleField);
+            printBattleField(battleField.length, battleField);
             return 3;
         }
     }
