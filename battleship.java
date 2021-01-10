@@ -53,7 +53,6 @@ public class Main {
                     break;
                 default:
             }
-            buf = scanner.nextLine().toUpperCase(Locale.ROOT).split(" ");
         }
         // The game starts
         System.out.println("The game starts!");
