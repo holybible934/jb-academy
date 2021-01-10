@@ -1,5 +1,6 @@
 package battleship;
 
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -56,7 +57,7 @@ public class Main {
         }
         // The game starts
         System.out.println("The game starts!");
-        printBattleField(border, battleField);
+        printBattleFieldWithFog(border, battleField);
 
         // Take a shot
         System.out.println("Take a shot!");
@@ -65,6 +66,18 @@ public class Main {
             String target = scanner.nextLine();
             shotNotFinished = takeAShot(target, battleField);
         }
+    }
+
+    private static void printBattleFieldWithFog(int border, char[][] battleField) {
+        char[][] fogField = Arrays.stream(battleField).map(char[]::clone).toArray(char[][]::new);
+        for (int i = 0; i < border; i++) {
+            for (int j = 0; j < border; j++) {
+                if (fogField[i][j] != 'X' && fogField[i][j] != 'M') {
+                    fogField[i][j] = '~';
+                }
+            }
+        }
+        printBattleField(border, fogField);
     }
 
     private static boolean takeAShot(String target, char[][] battleField) {
@@ -76,9 +89,11 @@ public class Main {
           return true;
         } else if (battleField[targetY][targetX] == '~') {
             battleField[targetY][targetX] = 'M';
+            printBattleFieldWithFog(battleField.length, battleField);
             System.out.println("You missed!");
         } else {
             battleField[targetY][targetX] = 'X';
+            printBattleFieldWithFog(battleField.length, battleField);
             System.out.println("You hit a ship!");
         }
         printBattleField(battleField.length, battleField);
