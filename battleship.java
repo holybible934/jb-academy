@@ -16,6 +16,7 @@ public class Main {
             }
         }
         printBattleField(border, battleField);
+        Ship[] myShips = new Ship[5];
 
         // Take Position
         Scanner scanner = new Scanner(System.in);
@@ -61,10 +62,61 @@ public class Main {
 
         // Take a shot
         System.out.println("Take a shot!");
-        boolean shotNotFinished = true;
-        while (shotNotFinished) {
+        boolean gameNotFinished = true;
+        while (gameNotFinished) {
             String target = scanner.nextLine();
-            shotNotFinished = takeAShot(target, battleField);
+            gameNotFinished = takeAShot(target, battleField);
+        }
+    }
+
+    class Ship {
+        int headX;
+        int tailX;
+        int headY;
+        int tailY;
+        String shipName;
+
+        public Ship(int headX, int tailX, int headY, int tailY, String shipName) {
+            if (headX <= tailX) {
+                this.headX = headX;
+                this.tailX = tailX;
+            }
+            else {
+                this.headX = tailX;
+                this.tailX = headX;
+            }
+            if (headY <= tailY) {
+                this.headY = headY;
+                this.tailY = tailY;
+            }
+            else {
+                this.headY = tailY;
+                this.tailY = headY;
+            }
+            this.shipName = shipName;
+        }
+
+        public boolean isHit(int hitX, int hitY) {
+            return (hitX >= this.headX && hitX <= this.tailX) && (hitY >= this.headY && hitY <= this.tailY);
+        }
+
+        public String getShipName() {
+            return shipName;
+        }
+
+        public boolean isVertical() {
+            return this.headY != this.tailY;
+        }
+
+        public boolean isSunk(char[][] battleField) {
+            for (int i = headX; i <= tailX; i++) {
+                for (int j = headY; j <= tailX; j++) {
+                    if (battleField[i][j] == 'O') {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
     }
 
@@ -90,14 +142,15 @@ public class Main {
         } else if (battleField[targetY][targetX] == '~') {
             battleField[targetY][targetX] = 'M';
             printBattleFieldWithFog(battleField.length, battleField);
-            System.out.println("You missed!");
+            System.out.println("You missed! Try again:");
+            return true;
         } else {
+            //TODO: X will result in hit a ship, sink 1 ship, or sink all ships to end the game.
             battleField[targetY][targetX] = 'X';
             printBattleFieldWithFog(battleField.length, battleField);
             System.out.println("You hit a ship!");
+            return false;
         }
-        printBattleField(battleField.length, battleField);
-        return false;
     }
 
     private static int placeDestroyer(char[][] battleField, String[] buf) {
