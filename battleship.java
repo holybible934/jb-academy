@@ -102,8 +102,8 @@ public class Main {
         }
 
         public boolean isSunk(char[][] battleField) {
-            for (int i = headX; i <= tailX; i++) {
-                for (int j = headY; j <= tailX; j++) {
+            for (int i = this.headX; i <= this.tailX; i++) {
+                for (int j = this.headY; j <= this.tailY; j++) {
                     if (battleField[i][j] == 'O') {
                         return false;
                     }
@@ -138,10 +138,26 @@ public class Main {
             System.out.println("You missed! Try again:");
             return true;
         } else {
-            //TODO: X will result in hit a ship, sink 1 ship, or sink all ships to end the game.
             battleField[targetY][targetX] = 'X';
+            int shipIndex = 0;
+            for (; shipIndex < myShips.length; shipIndex++) {
+                if (myShips[shipIndex].isHit(targetX, targetY)) {
+                    if (myShips[shipIndex].isSunk(battleField)) {
+                        System.out.println("You sank a ship! Specify a new target:");
+                    }
+                    else {
+                        System.out.println("You hit a ship!");
+                    }
+                    break;
+                }
+            }
             printBattleFieldWithFog(battleField.length, battleField);
-            System.out.println("You hit a ship!");
+            for (Ship myShip : myShips) {
+                if (!myShip.isSunk(battleField)) {
+                    return true;
+                }
+            }
+            System.out.println("You sank the last ship. You won. Congratulations!");
             return false;
         }
     }
@@ -166,7 +182,7 @@ public class Main {
     }
 
     private static boolean positionAdjustOrOccupied(char[][] battleField, String[] buf) {
-        final int size = 10;
+        final int size = battleField.length;
         int headX = Integer.parseInt(buf[0].substring(1)) - 1;
         int tailX = Integer.parseInt(buf[1].substring(1)) - 1;
         int headY = buf[0].charAt(0) - 'A';
