@@ -9,43 +9,82 @@ public class Main {
     public static void main(String[] args) {
         // Initialize battle field
         final int border = 10;
-        char[][] battleField = new char[border][border];
+        char[][] player1BattleField = new char[border][border];
         for (int i = 0; i < border; i++) {
             for (int j = 0; j < border; j++) {
-                battleField[i][j] = '~';
+                player1BattleField[i][j] = '~';
             }
         }
-        printBattleField(border, battleField);
-        Ship[] myShips = new Ship[5];
+        char[][] player2BattleField = Arrays.stream(player1BattleField).map(char[]::clone).toArray(char[][]::new);
+        Ship[] player1Ships = new Ship[5];
+        Ship[] player2Ships = new Ship[5];
 
-        // Take Position
+        // Player 1 take positions
+        printBattleField(border, player1BattleField);
+        System.out.println("Player 1, place your ships on the game field");
         Scanner scanner = new Scanner(System.in);
         String[] buf;
         System.out.println("Enter the coordinates of the Aircraft Carrier (5 cells):");
         for (int i = 0; i < 5; i++) {
             buf = scanner.nextLine().toUpperCase(Locale.ROOT).split(" ");
-            myShips[i] = placeShip(i, battleField, buf);
-            if (myShips[i] == null) {
+            player1Ships[i] = placeShip(i, player1BattleField, buf);
+            if (player1Ships[i] == null) {
                 i--;
             }
         }
-        // The game starts
-        System.out.println("The game starts!");
-        printBattleFieldWithFog(border, battleField);
 
-        // Take a shot
-        System.out.println("Take a shot!");
-        boolean gameNotFinished = true;
-        while (gameNotFinished) {
-            String target = scanner.nextLine();
-            gameNotFinished = takeAShot(target, battleField, myShips);
+        //Player 2 take positions
+        playerRotate(scanner);
+        printBattleField(border, player2BattleField);
+        System.out.println("Player 2, place your ships to the game field");
+        System.out.println("Enter the coordinates of the Aircraft Carrier (5 cells):");
+        for (int i = 0; i < 5; i++) {
+            buf = scanner.nextLine().toUpperCase(Locale.ROOT).split(" ");
+            player2Ships[i] = placeShip(i, player2BattleField, buf);
+            if (player2Ships[i] == null) {
+                i--;
+            }
         }
+        playerRotate(scanner);
+
+        // Game play
+        boolean player1Turn = true;
+        boolean gameNotFinished = true;
+        String target = "";
+        while (gameNotFinished) {
+            if (player1Turn) {
+                printBattleFieldWithFog(border, player2BattleField);
+                System.out.println("---------------------");
+                printBattleField(border, player1BattleField);
+                System.out.println("Player 1, it's your turn:");
+                target = scanner.nextLine();
+                gameNotFinished = takeAShot(target, player2BattleField, player2Ships);
+                player1Turn = false;
+            }
+            else {
+                printBattleFieldWithFog(border, player1BattleField);
+                System.out.println("---------------------");
+                printBattleField(border, player2BattleField);
+                System.out.println("Player 2, it's your turn:");
+                target = scanner.nextLine();
+                gameNotFinished = takeAShot(target, player1BattleField, player1Ships);
+                player1Turn = true;
+            }
+            playerRotate(scanner);
+        }
+    }
+
+    private static void playerRotate(Scanner scanner) {
+        System.out.println("Press Enter and pass the move to another player");
+        scanner.nextLine();
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 
     private static Ship placeShip(int i, char[][] battleField, String[] buf) {
         int[] shipSizes = {5, 4, 3, 3, 2};
         String[] shipNames = {"Aircraft Carrier", "Battleship", "Submarine", "Cruiser", "Destroyer"};
-        Ship ship= null;
+        Ship ship = null;
         if (inputCheck(buf, shipSizes[i])) {
             System.out.println("Error! Wrong input of " + shipNames[i] + "! Try again:");
         }
