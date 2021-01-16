@@ -93,10 +93,6 @@ public class Main {
             return (hitX >= this.headX && hitX <= this.tailX) && (hitY >= this.headY && hitY <= this.tailY);
         }
 
-        public String getShipName() {
-            return shipName;
-        }
-
         public boolean isVertical() {
             return this.headY != this.tailY;
         }
@@ -139,12 +135,11 @@ public class Main {
             return true;
         } else {
             battleField[targetY][targetX] = 'X';
-            for (int shipIndex = 0; shipIndex < myShips.length; shipIndex++) {
-                if (myShips[shipIndex].isHit(targetX, targetY)) {
-                    if (myShips[shipIndex].isSunk(battleField)) {
+            for (Ship ship : myShips) {
+                if (ship.isHit(targetX, targetY)) {
+                    if (ship.isSunk(battleField)) {
                         System.out.println("You sank a ship! Specify a new target:");
-                    }
-                    else {
+                    } else {
                         System.out.println("You hit a ship!");
                     }
                     break;
@@ -155,9 +150,6 @@ public class Main {
             for (Ship myShip : myShips) {
                 if (!myShip.isSunk(battleField)) {
                     return true;
-                }
-                else {
-                    System.out.println("The ship:" + myShip.getShipName() + " is sunk.");
                 }
             }
             System.out.println("You sank the last ship. You won. Congratulations!");
@@ -200,24 +192,18 @@ public class Main {
             headY = tailY;
             tailY = temp;
         }
-        boolean result = false;
         for (int i = headX - 1; i <= tailX + 1; i++) {
-            if (i < 0 || i >= size) {
-            }
-            else {
+            if (i >= 0 && i < size) {
                 for (int j = headY - 1; j <= tailY + 1; j++) {
-                    if (j < 0 || j >= size) {
-                    }
-                    else {
+                    if (j >= 0 && j < size) {
                         if (battleField[j][i] != '~') {
-                            result = true;
-                            break;
+                            return true;
                         }
                     }
                 }
             }
         }
-        return result;
+        return false;
     }
 
     private static boolean inputCheck(String[] buf, int shipLength) {
@@ -247,15 +233,11 @@ public class Main {
             // Wrong length of Ship
             return true;
         }
-        else if (buf[0].compareTo(buf[1]) == 0) {
+        else // Neither horizontal nor vertical
+            if (buf[0].compareTo(buf[1]) == 0) {
             // Two coordinates are the same
             return true;
-        } else if (headY != tailY && headX != tailX) {
-            // Neither horizontal nor vertical
-            return true;
-        } else {
-            return false;
-        }
+        } else return headY != tailY && headX != tailX;
     }
 
     private static void printBattleField(final int border, char[][] battleField) {
