@@ -21,6 +21,7 @@ public class Main {
         // Take Position
         Scanner scanner = new Scanner(System.in);
         String[] buf;
+        System.out.println("Enter the coordinates of the Aircraft Carrier (5 cells):");
         for (int i = 0; i < 5; i++) {
             buf = scanner.nextLine().toUpperCase(Locale.ROOT).split(" ");
             myShips[i] = placeShip(i, battleField, buf);
@@ -37,7 +38,7 @@ public class Main {
         boolean gameNotFinished = true;
         while (gameNotFinished) {
             String target = scanner.nextLine();
-            gameNotFinished = takeAShot(target, battleField);
+            gameNotFinished = takeAShot(target, battleField, myShips);
         }
     }
 
@@ -45,7 +46,6 @@ public class Main {
         int[] shipSizes = {5, 4, 3, 3, 2};
         String[] shipNames = {"Aircraft Carrier", "Battleship", "Submarine", "Cruiser", "Destroyer"};
         Ship ship= null;
-        System.out.println("Enter the coordinates of the " + shipNames[i] + "(" + shipSizes[i] + " cells):");
         if (inputCheck(buf, shipSizes[i])) {
             System.out.println("Error! Wrong input of " + shipNames[i] + "! Try again:");
         }
@@ -55,6 +55,9 @@ public class Main {
         else {
             ship = updateBattleField(battleField, buf, shipNames[i]);
             printBattleField(battleField.length, battleField);
+            if (i + 1 < 5) {
+                System.out.println("Enter the coordinates of the " + shipNames[i+1] + "(" + shipSizes[i+1] + " cells):");
+            }
         }
         return ship;
     }
@@ -122,7 +125,7 @@ public class Main {
         printBattleField(border, fogField);
     }
 
-    private static boolean takeAShot(String target, char[][] battleField) {
+    private static boolean takeAShot(String target, char[][] battleField, Ship[] myShips) {
         int targetX = Integer.parseInt(target.substring(1)) - 1;
         int targetY = target.charAt(0) - 'A';
         final int border = battleField.length - 1;
