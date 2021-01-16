@@ -20,40 +20,12 @@ public class Main {
 
         // Take Position
         Scanner scanner = new Scanner(System.in);
-        int allocPhase = 0;
-        System.out.println("Enter the coordinates of the Aircraft Carrier (5 cells):");
         String[] buf;
-        while (allocPhase < 5) {
+        for (int i = 0; i < 5; i++) {
             buf = scanner.nextLine().toUpperCase(Locale.ROOT).split(" ");
-            switch (allocPhase) {
-                case 0:
-                    allocPhase = placeAircraftCarrier(battleField, buf);
-                    if (allocPhase == 1) {
-                        System.out.println("Enter the coordinates of the Battleship (4 cells):");
-                    }
-                    break;
-                case 1:
-                    allocPhase = placeBattleship(battleField, buf);
-                    if (allocPhase == 2) {
-                        System.out.println("Enter the coordinates of the Submarine (3 cells):");
-                    }
-                    break;
-                case 2:
-                    allocPhase = placeSubmarine(battleField, buf);
-                    if (allocPhase == 3) {
-                        System.out.println("Enter the coordinates of the Cruiser (3 cells):");
-                    }
-                    break;
-                case 3:
-                    allocPhase = placeCruiser(battleField, buf);
-                    if (allocPhase == 4) {
-                        System.out.println("Enter the coordinates of the Destroyer (2 cells):");
-                    }
-                    break;
-                case 4:
-                    allocPhase = placeDestroyer(battleField, buf);
-                    break;
-                default:
+            myShips[i] = placeShip(i, battleField, buf);
+            if (myShips[i] == null) {
+                i--;
             }
         }
         // The game starts
@@ -69,7 +41,25 @@ public class Main {
         }
     }
 
-    class Ship {
+    private static Ship placeShip(int i, char[][] battleField, String[] buf) {
+        int[] shipSizes = {5, 4, 3, 3, 2};
+        String[] shipNames = {"Aircraft Carrier", "Battleship", "Submarine", "Cruiser", "Destroyer"};
+        Ship ship= null;
+        System.out.println("Enter the coordinates of the " + shipNames[i] + "(" + shipSizes[i] + " cells):");
+        if (inputCheck(buf, shipSizes[i])) {
+            System.out.println("Error! Wrong input of " + shipNames[i] + "! Try again:");
+        }
+        else if (positionAdjustOrOccupied(battleField, buf)) {
+            System.out.println("Error! You placed it wrongly or too close to another one. Try again:");
+        }
+        else {
+            ship = updateBattleField(battleField, buf, shipNames[i]);
+            printBattleField(battleField.length, battleField);
+        }
+        return ship;
+    }
+
+    static class Ship {
         int headX;
         int tailX;
         int headY;
@@ -153,103 +143,23 @@ public class Main {
         }
     }
 
-    private static int placeDestroyer(char[][] battleField, String[] buf) {
-        if (inputCheck(buf, 2)) {
-            System.out.println("Error! Wrong input of Destroyer! Try again:");
-            return 4;
-        } else if (positionAdjustOrOccupied(battleField, buf)) {
-            System.out.println("Error! You placed it wrongly or too close to another one. Try again:");
-            return 4;
-        } else {
-            updateBattleField(battleField, buf);
-            printBattleField(10, battleField);
-            return 5;
-        }
-    }
-
-    private static int placeCruiser(char[][] battleField, String[] buf) {
-        if (inputCheck(buf, 3)) {
-            System.out.println("Error! Wrong input of Cruiser! Try again:");
-            return 3;
-        } else if (positionAdjustOrOccupied(battleField, buf)) {
-            System.out.println("Error! You placed it wrongly or too close to another one. Try again:");
-            return 3;
-        } else {
-            updateBattleField(battleField, buf);
-            printBattleField(10, battleField);
-            return 4;
-        }
-    }
-
-    private static int placeSubmarine(char[][] battleField, String[] buf) {
-        if (inputCheck(buf, 3)) {
-            System.out.println("Error! Wrong input of Submarine! Try again:");
-            return 2;
-        } else if (positionAdjustOrOccupied(battleField, buf)) {
-            System.out.println("Error! You placed it wrongly or too close to another one. Try again:");
-            return 2;
-        } else {
-            updateBattleField(battleField, buf);
-            printBattleField(battleField.length, battleField);
-            return 3;
-        }
-    }
-
-    private static int placeBattleship(char[][] battleField, String[] buf) {
-        if (inputCheck(buf, 4)) {
-            System.out.println("Error! Wrong input of Battleship! Try again:");
-            return 1;
-        } else if (positionAdjustOrOccupied(battleField, buf)) {
-            System.out.println("Error! You placed it wrongly or too close to another one. Try again:");
-            return 1;
-        } else {
-            updateBattleField(battleField, buf);
-            printBattleField(10, battleField);
-            return 2;
-        }
-    }
-
-    private static int placeAircraftCarrier(char[][] battleField, String[] buf) {
-        if (inputCheck(buf, 5)) {
-            System.out.println("Error! Wrong input of Aircraft Carrier! Try again:");
-            return 0;
-        } else if (positionAdjustOrOccupied(battleField, buf)) {
-            System.out.println("Error! You placed it wrongly or too close to another one. Try again:");
-            return 0;
-        } else {
-            updateBattleField(battleField, buf);
-            printBattleField(10, battleField);
-            return 1;
-        }
-    }
-
-    private static void updateBattleField(char[][] battleField, String[] buf) {
+    private static Ship updateBattleField(char[][] battleField, String[] buf, String shipName) {
         int headX = Integer.parseInt(buf[0].substring(1)) - 1;
         int tailX = Integer.parseInt(buf[1].substring(1)) - 1;
         int headY = buf[0].charAt(0) - 'A';
         int tailY = buf[1].charAt(0) - 'A';
-        if (headX > tailX) {
-            int temp = headX;
-            headX = tailX;
-            tailX = temp;
-        }
-        if (headY > tailY) {
-            int temp = headY;
-            headY = tailY;
-            tailY = temp;
-        }
-        if (headX == tailX) {
-            // Vertical
-            for (int i = headY; i <= tailY; i++) {
-                battleField[i][headX] = 'O';
+        Ship ship = new Ship(headX, tailX, headY, tailY, shipName);
+        if (ship.isVertical()) {
+            for (int i = ship.headY; i <= ship.tailY; i++) {
+                battleField[i][ship.headX] = 'O';
             }
         }
         else {
-            // Horizontal
-            for (int j = headX; j <= tailX; j++) {
-                battleField[headY][j] = 'O';
+            for (int j = ship.headX; j <= ship.tailX; j++) {
+                battleField[ship.headY][j] = 'O';
             }
         }
+        return ship;
     }
 
     private static boolean positionAdjustOrOccupied(char[][] battleField, String[] buf) {
