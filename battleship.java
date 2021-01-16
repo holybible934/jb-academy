@@ -102,8 +102,8 @@ public class Main {
         }
 
         public boolean isSunk(char[][] battleField) {
-            for (int i = this.headX; i <= this.tailX; i++) {
-                for (int j = this.headY; j <= this.tailY; j++) {
+            for (int i = this.headY; i <= this.tailY; i++) {
+                for (int j = this.headX; j <= this.tailX; j++) {
                     if (battleField[i][j] == 'O') {
                         return false;
                     }
@@ -139,8 +139,7 @@ public class Main {
             return true;
         } else {
             battleField[targetY][targetX] = 'X';
-            int shipIndex = 0;
-            for (; shipIndex < myShips.length; shipIndex++) {
+            for (int shipIndex = 0; shipIndex < myShips.length; shipIndex++) {
                 if (myShips[shipIndex].isHit(targetX, targetY)) {
                     if (myShips[shipIndex].isSunk(battleField)) {
                         System.out.println("You sank a ship! Specify a new target:");
@@ -152,9 +151,13 @@ public class Main {
                 }
             }
             printBattleFieldWithFog(battleField.length, battleField);
+            // Check all ships are sunk or not
             for (Ship myShip : myShips) {
                 if (!myShip.isSunk(battleField)) {
                     return true;
+                }
+                else {
+                    System.out.println("The ship:" + myShip.getShipName() + " is sunk.");
                 }
             }
             System.out.println("You sank the last ship. You won. Congratulations!");
