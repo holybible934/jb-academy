@@ -13,7 +13,13 @@ public class Main {
             String[] input = buf.split("\\.");
             int intPart = Integer.parseInt(input[0], sourceBase);
             //TODO: Test#4 35, af.xy
-            double fracPart = Double.parseDouble(input[1]) / Math.pow(10, input[1].length());
+            char[] decimals = input[1].toCharArray();
+            double fracPart = 0.0;
+            for (int i = 0; i < decimals.length; i++) {
+                int digit = Character.getNumericValue(decimals[i]);
+                fracPart += digit / Math.pow(sourceBase, i + 1);
+            }
+            //double fracPart = Double.parseDouble(input[1]) / Math.pow(10, input[1].length());
 
             int newBase = scanner.nextInt();
             output = new StringBuilder(Integer.toString(intPart, newBase) + '.');
