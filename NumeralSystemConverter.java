@@ -12,20 +12,18 @@ public class Main {
         if (buf.contains(".")) {
             String[] input = buf.split("\\.");
             int intPart = Integer.parseInt(input[0], sourceBase);
-            //TODO: Test#4 35, af.xy
             char[] decimals = input[1].toCharArray();
             double fracPart = 0.0;
             for (int i = 0; i < decimals.length; i++) {
                 int digit = Character.getNumericValue(decimals[i]);
                 fracPart += digit / Math.pow(sourceBase, i + 1);
             }
-            //double fracPart = Double.parseDouble(input[1]) / Math.pow(10, input[1].length());
-
             int newBase = scanner.nextInt();
             output = new StringBuilder(Integer.toString(intPart, newBase) + '.');
             for (int i = 0; i < 5; i++) {
                 String temp = String.valueOf(fracPart * newBase);
-                output.append((int) Double.parseDouble(temp));
+                int beforeDecimals = (int) Double.parseDouble(temp);
+                output.append(Character.forDigit(beforeDecimals, newBase));
                 int indexOfDecimal = temp.indexOf(".");
                 fracPart = Double.parseDouble("0" + temp.substring(indexOfDecimal));
             }
