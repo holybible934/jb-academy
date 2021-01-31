@@ -57,18 +57,18 @@ public class Main {
 
     private static void printJumpSearch(Instant bubbleSortStart, Instant bubbleSortEnd, Instant jumpSearchStart, Instant jumpSearchEnd) {
         Duration total = Duration.between(bubbleSortStart, jumpSearchEnd);
-        long totalMin = total.toMinutes();
-        long totalSec = total.toSeconds();
+        long totalMin = total.toMinutesPart();
+        long totalSec = total.toSecondsPart();
         long totalMs = total.toMillisPart();
         System.out.printf("Found 500 / 500 entries. Time taken: %d min. %d sec. %d ms.%n", totalMin, totalSec, totalMs);
         Duration sort = Duration.between(bubbleSortStart,bubbleSortEnd);
-        long sortMin = sort.toMinutes();
-        long sortSec = sort.toSeconds();
+        long sortMin = sort.toMinutesPart();
+        long sortSec = sort.toSecondsPart();
         long sortMS = sort.toMillisPart();
         System.out.printf("Sorting time: %d min. %d sec. %d ms.%n", sortMin, sortSec, sortMS);
         Duration search = Duration.between(jumpSearchStart, jumpSearchEnd);
-        long searchMin = search.toMinutes();
-        long searchSec = search.toSeconds();
+        long searchMin = search.toMinutesPart();
+        long searchSec = search.toSecondsPart();
         long searchMS = search.toMillisPart();
         System.out.printf("Searching time: %d min. %d sec. %d ms%n", searchMin, searchSec, searchMS);
     }
@@ -79,12 +79,13 @@ public class Main {
         int blockLeft;
         int blockRight = 0;
         for (String target : namesInFind) {
-            while (blockRight < sortedNamesInDir.size()) {
+            while (blockRight < sortedNamesInDir.size() - 1) {
                 blockLeft = blockRight;
-                blockRight = Math.min(sortedNamesInDir.size() - 1, blockLeft + jumpLength);
+                blockRight = Math.min(sortedNamesInDir.size() - 1, blockRight + jumpLength);
                 if (sortedNamesInDir.get(blockRight).compareTo(target) >= 0) {
                     for (int i = blockRight; i >= blockLeft; i--) {
                         if (sortedNamesInDir.get(i).contains(target)) {
+                            System.out.printf("Block Left is %d, Block Right is %d%n", blockLeft, blockRight);
                             counter++;
                         }
                     }
@@ -97,26 +98,26 @@ public class Main {
 
     private static void printLinearSearch(Instant bubbleSortStart, Instant bubbleSortEnd, Instant linearSearchStart, Instant linearSearchEnd) {
         Duration total = Duration.between(bubbleSortStart, linearSearchEnd);
-        long totalMin = total.toMinutes();
-        long totalSec = total.toSeconds();
+        long totalMin = total.toMinutesPart();
+        long totalSec = total.toSecondsPart();
         long totalMs = total.toMillisPart();
         System.out.printf("Found 500 / 500 entries. Time taken: %d min. %d sec. %d ms.%n", totalMin, totalSec, totalMs);
         Duration sort = Duration.between(bubbleSortStart,bubbleSortEnd);
-        long sortMin = sort.toMinutes();
-        long sortSec = sort.toSeconds();
+        long sortMin = sort.toMinutesPart();
+        long sortSec = sort.toSecondsPart();
         long sortMS = sort.toMillisPart();
         System.out.printf("Sorting time: %d min. %d sec. %d ms. - STOPPED, move to linear search%n", sortMin, sortSec, sortMS);
         Duration search = Duration.between(linearSearchStart, linearSearchEnd);
-        long searchMin = search.toMinutes();
-        long searchSec = search.toSeconds();
+        long searchMin = search.toMillisPart();
+        long searchSec = search.toSecondsPart();
         long searchMS = search.toMillisPart();
         System.out.printf("Searching time: %d min. %d sec. %d ms%n", searchMin, searchSec, searchMS);
     }
 
     private static void printLinearSearch(Instant linearSearchStart, Instant linearSearchEnd) {
         Duration d = Duration.between(linearSearchStart, linearSearchEnd);
-        long minutes = d.toMinutes();
-        long seconds = d.toSeconds();
+        long minutes = d.toMinutesPart();
+        long seconds = d.toSecondsPart();
         long millis = d.toMillisPart();
         System.out.printf("Found 500 / 500 entries. Time taken: %d min. %d sec. %d ms.%n", minutes, seconds, millis);
     }
