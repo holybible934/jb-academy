@@ -5,12 +5,14 @@ import java.io.FileNotFoundException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         File find = new File("/Users/chchang/Downloads/find.txt");
+        File directory = new File("/Users/chchang/Downloads/directory.txt");
         Scanner findScanner;
         Scanner directoryScanner;
         try {
@@ -44,7 +46,7 @@ public class Main {
             linearSearchStart = Instant.now();
             counter = doLinearSearch(namesInFind, namesInDir);
             linearSearchEnd = Instant.now();
-            printLinearSearch(bubbleSortStart, bubbleSortStart, linearSearchStart, linearSearchEnd);
+            printLinearSearch(bubbleSortStart, bubbleSortEnd, linearSearchStart, linearSearchEnd);
         }
         else {
             Instant jumpSearchStart = Instant.now();
@@ -183,7 +185,7 @@ public class Main {
         long sortMS = sort.toMillisPart();
         System.out.printf("Sorting time: %d min. %d sec. %d ms. - STOPPED, move to linear search%n", sortMin, sortSec, sortMS);
         Duration search = Duration.between(linearSearchStart, linearSearchEnd);
-        long searchMin = search.toMillisPart();
+        long searchMin = search.toMinutesPart();
         long searchSec = search.toSecondsPart();
         long searchMS = search.toMillisPart();
         System.out.printf("Searching time: %d min. %d sec. %d ms%n", searchMin, searchSec, searchMS);
@@ -209,12 +211,12 @@ public class Main {
         return counter;
     }
 
-    private static void bubbleSort(List<String> namesInFind) {
-        for (int i = 0; i < namesInFind.size() - 1; i++) {
-            if (namesInFind.get(i).compareTo(namesInFind.get(i + 1)) < 0) {
-                String temp = namesInFind.get(i + 1);
-                namesInFind.remove(i + 1);
-                namesInFind.add(i, temp);
+    private static void bubbleSort(List<String> sortedNamesInDir) {
+        for (int i = 0; i < sortedNamesInDir.size() - 1; i++) {
+            for (int j = i; j < sortedNamesInDir.size() - 1; j++) {
+                if (sortedNamesInDir.get(j).compareTo(sortedNamesInDir.get(j + 1)) < 0) {
+                    Collections.swap(sortedNamesInDir, j, j + 1);
+                }
             }
         }
     }
