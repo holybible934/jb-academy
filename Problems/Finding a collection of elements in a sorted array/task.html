@@ -1,0 +1,12 @@
+<h2>Finding a collection of elements in a sorted array</h2>
+<html>
+ <head></head>
+ <body>
+  <p style="text-align: left;">Previously we applied a binary search to find one element in a sorted array. In some cases, however, you might need to perform not only one but several such search queries. Here, you need to implement an <em>extended</em> version of binary search that will allow you to search not only for one element but also for a collection of elements in a sorted array.</p> 
+  <p style="text-align: left;">Your task is to<strong> </strong><strong>write a program</strong> that performs a search for a collection of numbers in a sorted array.</p> 
+  <p style="text-align: left;"><strong>Input</strong>: the first line contains one integer <span class="math-tex">\( n \)</span> such that <span class="math-tex">\( 1 \le n \le 10^5 \)</span>. The second line contains an array of $n$ natural numbers, each not exceeding $10^9$. The array is sorted in ascending order. The third line contains one integer $k$ such that $1 \le k \le 10^5$. The fourth line contains an array of $k$ natural numbers, each not exceeding $10^9$.</p> 
+  <p style="text-align: left;"><strong>Output</strong>: for each number from the second array, output the index of this number in the first array. If some number is not presented in the first array, output $-1$.</p> 
+  <p style="text-align: left;">In this problem, the array indexing is assumed to be started from $1$.</p>
+ </body>
+</html><br><b>Sample Input:</b><br><pre><code class="language-no-highlight">5<br>1 5 8 12 13<br>5<br>8 1 23 1 11</code></pre><br><b>Sample Output:</b><br><pre><code class="language-no-highlight">3 1 -1 1 -1</code></pre><br><br><br><font color="gray">Memory limit: 256 MB</font><br><font color="gray">Time limit: 3 seconds</font><br><br>
+<a href="https://hyperskill.org/learn/step/3545">Show topic summary</a>
