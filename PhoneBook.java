@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -64,6 +61,52 @@ public class Main {
         counter = doBinarySearch(sortedNamesInDir, namesInFind);
         Instant binarySearchEnd = Instant.now();
         printBinarySearch(quickSortStart, quickSortEnd, binarySearchStart, binarySearchEnd);
+
+        System.out.println("Start searching (hash table)...");
+        Instant createHashMapStart = Instant.now();
+        Hashtable<String, Integer> hashTable = createHashMap(namesInDir);
+        Instant createHashMapEnd = Instant.now();
+        Instant searchInHashMapStart = Instant.now();
+        counter = searchInHashMap(namesInFind, hashTable);
+        Instant searchInHashMapEnd = Instant.now();
+        printHashMap(createHashMapStart, createHashMapEnd, searchInHashMapStart, searchInHashMapEnd);
+    }
+
+    private static void printHashMap(Instant createHashMapStart, Instant createHashMapEnd, Instant searchInHashMapStart, Instant searchInHashMapEnd) {
+        Duration total = Duration.between(createHashMapStart, searchInHashMapEnd);
+        long totalMin = total.toMinutesPart();
+        long totalSec = total.toSecondsPart();
+        long totalMs = total.toMillisPart();
+        System.out.printf("Found 500 / 500 entries. Time taken: %d min. %d sec. %d ms.%n", totalMin, totalSec, totalMs);
+        Duration createHash = Duration.between(createHashMapStart, createHashMapEnd);
+        long createMin = createHash.toMinutesPart();
+        long createSec = createHash.toSecondsPart();
+        long createMs = createHash.toMillisPart();
+        System.out.printf("Creating time: %d min. %d sec. %d ms.%n", createMin, createSec, createMs);
+        Duration searchHash = Duration.between(searchInHashMapStart, searchInHashMapEnd);
+        long searchMin = searchHash.toMinutesPart();
+        long searchSec = searchHash.toSecondsPart();
+        long searchMs = searchHash.toMillisPart();
+        System.out.printf("Searching time: %d min. %d sec. %d ms.%n", searchMin, searchSec, searchMs);
+    }
+
+    private static int searchInHashMap(List<String> namesInFind, Hashtable<String, Integer> hashTable) {
+        int counter = 0;
+        for (String name : namesInFind) {
+            if (hashTable.containsKey(name)) {
+                counter++;
+            }
+        }
+        return counter;
+    }
+
+    private static Hashtable<String, Integer> createHashMap(List<String> namesInDir) {
+        Hashtable<String, Integer> table = new Hashtable<>();
+        int counter = 0;
+        for (String str : namesInDir) {
+            table.put(str, counter++);
+        }
+        return table;
     }
 
     private static void printBinarySearch(Instant quickSortStart, Instant quickSortEnd, Instant binarySearchStart, Instant binarySearchEnd) {
