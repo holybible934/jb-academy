@@ -6,9 +6,6 @@ class Main {
         Scanner scanner = new Scanner(System.in);
         int first = scanner.nextInt();
         int second = scanner.nextInt();
-        int temp = first;
-        first = second;
-        second = temp;
-        System.out.printf("%d %d", first, second);
+        System.out.printf("%d %d", second, first);
     }
 }
