@@ -1,10 +1,11 @@
 package advisor;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, InterruptedException {
         Scanner scanner = new Scanner(System.in);
         String cmd = "";
         String accessToken = null;
@@ -15,8 +16,7 @@ public class Main {
                 return;
             } else if (accessToken == null) {
                 if (cmd.equals("auth")) {
-                    accessToken = doOAuth();
-                    System.out.println("---SUCCESS---");
+                    accessToken = doOAuth(args);
                 } else {
                     System.out.println("Please, provide access for application.");
                 }
@@ -41,10 +41,13 @@ public class Main {
         }
     }
 
-    private static String doOAuth() {
-        String spotifyAuthUrl = "https://accounts.spotify.com/authorize?client_id=0e90298f01c545f3a4d7c47f15ce0a13&redirect_uri=http://localhost:8080&response_type=code";
-        System.out.println(spotifyAuthUrl);
-        return "VALID_ACCESS_TOKEN";
+    private static String doOAuth(String[] args) throws IOException, InterruptedException {
+        Authorization authorization = new Authorization(args);
+        if (authorization.getAuthorization()) {
+            return authorization.getAccessToken();
+        } else {
+            return null;
+        }
     }
 
     private static void printPlaylists(Scanner scanner) {

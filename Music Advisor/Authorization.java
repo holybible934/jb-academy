@@ -3,7 +3,6 @@ package advisor;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -16,17 +15,17 @@ public class Authorization {
 
     private final static String CLIENT_ID = "0e90298f01c545f3a4d7c47f15ce0a13";
     private final static String CLIENT_SECRET = "b795c31343dc48a693e3dccff0c6da21";
-    private final static String REDIRECT_URI = "http://localhost:8080";
+    private final static String REDIRECT_URI = "http://127.0.0.1:8080";
     private final static String RESPONSE_TYPE = "code";
     private final static String GRANT_TYPE = "authorization_code";
 
     private String authorizationCode;
 
     protected Authorization(String[] args) {
-//        if (args.length > 1 && "-access".equals(args[0])) {
-//            SERVER_PATH = args[1];
-//        }
-        SERVER_PATH = "http://127.0.0.1:8080";
+        if (args.length > 1 && "-access".equals(args[0])) {
+            SERVER_PATH = args[1];
+        }
+//        SERVER_PATH = "http://127.0.0.1:8080";
     }
 
     protected boolean getAuthorization() throws IOException, InterruptedException {
@@ -42,7 +41,7 @@ public class Authorization {
                     String query = exchange.getRequestURI().getQuery();
                     String response;
                     if (query != null && query.contains("code")) {
-                        authorizationCode = query.substring(5);
+                        authorizationCode = "this is my code";
                         response = "Got the code. Return back to your program.";
                         System.out.println("code received");
                         isAuthorized.set(true);
@@ -55,7 +54,7 @@ public class Authorization {
                 }
         );
         while (authorizationCode == null) {
-            Thread.sleep(10000);
+            Thread.sleep(100);
         }
         server.stop(10);
         return isAuthorized.get();
@@ -80,7 +79,8 @@ public class Authorization {
         if (response != null) {
             System.out.println(response.body());
             System.out.println("---SUCCESS---");
-            return "12345";
+            return response.body();
         }
+        return null;
     }
 }
