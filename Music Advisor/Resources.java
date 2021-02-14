@@ -29,13 +29,14 @@ public class Resources {
             for (int i = 0; i < items.size(); i++) {
                 JsonObject item = items.get(i).getAsJsonObject();
                 String albumName = item.get("name").getAsString() + "\n";
-                StringBuilder artistNames = new StringBuilder();
+                StringBuilder artistNames = new StringBuilder().append("[");
                 JsonArray artists = item.getAsJsonArray("artists");
 //                artistNames.append(artists.getAsJsonObject().get("name").getAsString());
                 for (JsonElement artist : artists) {
-                    artistNames.append(artist.getAsJsonObject().get("name").getAsString());
+                    artistNames.append(artist.getAsJsonObject().get("name").getAsString()).append(", ");
                 }
-                artistNames.append("\n");
+                artistNames.delete(artistNames.length() - 2, artistNames.length());
+                artistNames.append("]\n");
                 String externalUrls = item.getAsJsonObject("external_urls").get("spotify").getAsString();
                 result.add((albumName + artistNames + externalUrls));
             }
@@ -90,19 +91,29 @@ public class Resources {
     public List<String> getPlaylists(StringBuilder playlist) {
         Map<String, String> categoriesMap = getCategoriesWithIds();
         if (!categoriesMap.containsKey(playlist.toString())) {
+            System.out.println(playlist);
             return null;
         }
         String categoryId = categoriesMap.get(playlist.toString());
+        System.out.println(categoryId);
         HttpResponse<String> response = getStringHttpResponse("/v1/browse/categories/" + categoryId + "/playlists");
         List<String> result = new ArrayList<>();
-        if (response != null) {
-            JsonArray categories = JsonParser.parseString(response.body()).getAsJsonObject().getAsJsonObject("playlists").getAsJsonArray("items");
+        if (response != null && !response.body().contains("error")) {
+            JsonArray categories = JsonParser.parseString(response.body())
+                    .getAsJsonObject().getAsJsonObject("playlists")
+                    .getAsJsonArray("items");
             for (int i = 0; i < categories.size(); i++) {
                 JsonObject item = categories.get(i).getAsJsonObject();
                 String playListName = item.get("name").getAsString() + "\n";
                 String externalUrls = item.getAsJsonObject("external_urls").get("spotify").getAsString() + "\n";
                 result.add(playListName + externalUrls);
             }
+        } else {
+            System.out.println(response.body());
+            JsonObject errorJson = JsonParser.parseString(response.body())
+                    .getAsJsonObject()
+                    .getAsJsonObject("error");
+            result.add(errorJson.get("message").getAsString());
         }
         return result;
     }
@@ -114,6 +125,7 @@ public class Resources {
                 .uri(URI.create(API_SERVER_PATH + targetUrl))
                 .GET()
                 .build();
+        System.out.println("URI: " + request.uri().toString());
         HttpResponse<String> response = null;
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
