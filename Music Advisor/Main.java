@@ -1,6 +1,7 @@
 package advisor;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -78,11 +79,10 @@ public class Main {
     }
 
     private static void printNewRelease(Resources res) {
-//        System.out.println("---NEW RELEASES---");
-//        System.out.println("Mountains [Sia, Diplo, Labrinth]\n" +
-//                "Runaway [Lil Peep]\n" +
-//                "The Greatest Show [Panic! At The Disco]\n" +
-//                "All Out Life [Slipknot]");
-        String[] list = res.getNew();
+        List<String> list = res.getNew();
+        for (String str : list) {
+            System.out.println(str);
+            System.out.println();
+        }
     }
 }
