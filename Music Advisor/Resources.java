@@ -28,7 +28,7 @@ public class Resources {
         HttpClient client = HttpClient.newBuilder().build();
         HttpRequest request = HttpRequest.newBuilder()
                 .header("Authorization", "Bearer " + accessToken)
-//                .header("limit", "5")
+                .header("limit", "5")
                 .uri(URI.create(API_SERVER_PATH + "/v1/browse/new-releases"))
                 .GET()
                 .build();

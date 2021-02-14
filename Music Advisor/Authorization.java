@@ -1,5 +1,7 @@
 package advisor;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
@@ -79,7 +81,10 @@ public class Authorization {
         if (response != null) {
             System.out.println(response.body());
             System.out.println("---SUCCESS---");
-            return response.body();
+            JsonObject jo = JsonParser.parseString(response.body()).getAsJsonObject();
+            String accToken = jo.get("access_token").toString();
+            accToken = accToken.substring(1, accToken.length() - 1);
+            return accToken;
         }
         return null;
     }
