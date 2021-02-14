@@ -7,9 +7,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Resources {
 
@@ -21,7 +19,6 @@ public class Resources {
             API_SERVER_PATH = args[3];
         }
         accessToken = accToken;
-//        API_SERVER_PATH = "http://127.0.0.1:8080";
     }
 
     public List<String> getNew() {
@@ -75,6 +72,41 @@ public class Resources {
         return result;
     }
 
+    private Map<String, String> getCategoriesWithIds() {
+        HttpResponse<String> response = getStringHttpResponse("/v1/browse/categories");
+        Map<String, String> result = new HashMap<>();
+        if (response != null) {
+            JsonArray categories = JsonParser.parseString(response.body()).getAsJsonObject().getAsJsonObject("categories").getAsJsonArray("items");
+            for (int i = 0; i < categories.size(); i++) {
+                JsonObject item = categories.get(i).getAsJsonObject();
+                String categoryId = item.get("id").getAsString();
+                String categoryName = item.get("name").getAsString();
+                result.put(categoryName, categoryId);
+            }
+        }
+        return result;
+    }
+
+    public List<String> getPlaylists(StringBuilder playlist) {
+        Map<String, String> categoriesMap = getCategoriesWithIds();
+        if (!categoriesMap.containsKey(playlist.toString())) {
+            return null;
+        }
+        String categoryId = categoriesMap.get(playlist.toString());
+        HttpResponse<String> response = getStringHttpResponse("/v1/browse/categories/" + categoryId + "/playlists");
+        List<String> result = new ArrayList<>();
+        if (response != null) {
+            JsonArray categories = JsonParser.parseString(response.body()).getAsJsonObject().getAsJsonObject("playlists").getAsJsonArray("items");
+            for (int i = 0; i < categories.size(); i++) {
+                JsonObject item = categories.get(i).getAsJsonObject();
+                String playListName = item.get("name").getAsString() + "\n";
+                String externalUrls = item.getAsJsonObject("external_urls").get("spotify").getAsString() + "\n";
+                result.add(playListName + externalUrls);
+            }
+        }
+        return result;
+    }
+
     private HttpResponse<String> getStringHttpResponse(String targetUrl) {
         HttpClient client = HttpClient.newBuilder().build();
         HttpRequest request = HttpRequest.newBuilder()
@@ -90,6 +122,4 @@ public class Resources {
         }
         return response;
     }
-
-
 }

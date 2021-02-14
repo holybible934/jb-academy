@@ -28,7 +28,6 @@ public class Authorization {
         if (Arrays.asList(args).contains("-access")) {
             SERVER_PATH = args[1];
         }
-//        SERVER_PATH = "http://127.0.0.1:8080";
     }
 
     protected boolean getAuthorization() throws IOException, InterruptedException {

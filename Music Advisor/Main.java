@@ -12,7 +12,7 @@ public class Main {
         String accessToken = null;
         Resources res = null;
         while (scanner.hasNext()) {
-            cmd = scanner.next();
+            cmd = scanner.nextLine();
             if (cmd.equals("exit")) {
                 System.out.println("---GOODBYE!---");
                 return;
@@ -22,6 +22,18 @@ public class Main {
                     res = new Resources(args, accessToken);
                 } else {
                     System.out.println("Please, provide access for application.");
+                }
+            } else if (cmd.startsWith("playlists")) {
+                StringBuilder playlist = new StringBuilder();
+                String[] parsedCmd = cmd.split(" ");
+                if (parsedCmd.length > 1) {
+                    for (int i = 1; i < cmd.split(" ").length; i++) {
+                        playlist.append(parsedCmd[i]).append(" ");
+                    }
+                    playlist.deleteCharAt(playlist.length() - 1);
+                    printPlaylists(res, playlist);
+                } else {
+                    System.out.println("Not a correct command. Input again!");
                 }
             } else {
                 switch (cmd) {
@@ -33,9 +45,6 @@ public class Main {
                         break;
                     case "categories":
                         printCategories(res);
-                        break;
-                    case "playlists":
-                        printPlaylists(scanner);
                         break;
                     default:
                         System.out.println("Not a correct command. Input again!");
@@ -53,13 +62,13 @@ public class Main {
         }
     }
 
-    private static void printPlaylists(Scanner scanner) {
-        String type = scanner.next().toUpperCase(Locale.ROOT);
-        System.out.println("---" + type + " PLAYLISTS---");
-        System.out.println("Top Lists\n" +
-                "Pop\n" +
-                "Mood\n" +
-                "Latin");
+    private static void printPlaylists(Resources res, StringBuilder playlist) {
+        List<String> list = res.getPlaylists(playlist);
+        if (list == null) {
+            System.out.println("Unknown category name");
+        } else {
+            printList(list);
+        }
     }
 
     private static void printCategories(Resources res) {
