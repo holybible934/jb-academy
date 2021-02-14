@@ -9,6 +9,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         String cmd = "";
         String accessToken = null;
+        Resources res = null;
         while (scanner.hasNext()) {
             cmd = scanner.next();
             if (cmd.equals("exit")) {
@@ -17,13 +18,14 @@ public class Main {
             } else if (accessToken == null) {
                 if (cmd.equals("auth")) {
                     accessToken = doOAuth(args);
+                    res = new Resources(args, accessToken);
                 } else {
                     System.out.println("Please, provide access for application.");
                 }
             } else {
                 switch (cmd) {
                     case "new":
-                        printNewRelease();
+                        printNewRelease(res);
                         break;
                     case "featured":
                         printFeatured();
@@ -75,11 +77,12 @@ public class Main {
                 "Songs to Sing in the Shower");
     }
 
-    private static void printNewRelease() {
-        System.out.println("---NEW RELEASES---");
-        System.out.println("Mountains [Sia, Diplo, Labrinth]\n" +
-                "Runaway [Lil Peep]\n" +
-                "The Greatest Show [Panic! At The Disco]\n" +
-                "All Out Life [Slipknot]");
+    private static void printNewRelease(Resources res) {
+//        System.out.println("---NEW RELEASES---");
+//        System.out.println("Mountains [Sia, Diplo, Labrinth]\n" +
+//                "Runaway [Lil Peep]\n" +
+//                "The Greatest Show [Panic! At The Disco]\n" +
+//                "All Out Life [Slipknot]");
+        String[] list = res.getNew();
     }
 }
