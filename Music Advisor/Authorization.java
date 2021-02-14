@@ -8,13 +8,14 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Authorization {
     private static String SERVER_PATH = "https://accounts.spotify.com";
 
     private final static String CLIENT_ID = "0e90298f01c545f3a4d7c47f15ce0a13";
-    private final static String CLIENT_SECRET = "b795c31343dc48a693e3dccff0c6da21";
+    private final static String CLIENT_SECRET = "1eaaa70c1bbc43b89c7986cab5a6d10b";
     private final static String REDIRECT_URI = "http://127.0.0.1:8080";
     private final static String RESPONSE_TYPE = "code";
     private final static String GRANT_TYPE = "authorization_code";
@@ -22,7 +23,7 @@ public class Authorization {
     private String authorizationCode;
 
     protected Authorization(String[] args) {
-        if (args.length > 1 && "-access".equals(args[0])) {
+        if (Arrays.asList(args).contains("-access")) {
             SERVER_PATH = args[1];
         }
 //        SERVER_PATH = "http://127.0.0.1:8080";
@@ -41,7 +42,7 @@ public class Authorization {
                     String query = exchange.getRequestURI().getQuery();
                     String response;
                     if (query != null && query.contains("code")) {
-                        authorizationCode = "this is my code";
+                        authorizationCode = query.substring(5);;
                         response = "Got the code. Return back to your program.";
                         System.out.println("code received");
                         isAuthorized.set(true);
@@ -56,12 +57,11 @@ public class Authorization {
         while (authorizationCode == null) {
             Thread.sleep(100);
         }
-        server.stop(10);
+        server.stop(1);
         return isAuthorized.get();
     }
 
     protected String getAccessToken() {
-        System.out.println("code received");
         System.out.println("making http request for access_token...");
         HttpClient client = HttpClient.newBuilder().build();
         HttpRequest request = HttpRequest.newBuilder()
