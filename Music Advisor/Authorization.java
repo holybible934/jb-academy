@@ -44,7 +44,7 @@ public class Authorization {
                     String query = exchange.getRequestURI().getQuery();
                     String response;
                     if (query != null && query.contains("code")) {
-                        authorizationCode = query.substring(5);;
+                        authorizationCode = query.substring(5);
                         response = "Got the code. Return back to your program.";
                         System.out.println("code received");
                         isAuthorized.set(true);

@@ -8,7 +8,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
         Scanner scanner = new Scanner(System.in);
-        String cmd = "";
+        String cmd;
         String accessToken = null;
         Resources res = null;
         while (scanner.hasNext()) {
@@ -29,10 +29,10 @@ public class Main {
                         printNewRelease(res);
                         break;
                     case "featured":
-                        printFeatured();
+                        printFeatured(res);
                         break;
                     case "categories":
-                        printCategories();
+                        printCategories(res);
                         break;
                     case "playlists":
                         printPlaylists(scanner);
@@ -62,24 +62,22 @@ public class Main {
                 "Latin");
     }
 
-    private static void printCategories() {
-        System.out.println("---CATEGORIES---");
-        System.out.println("Top Lists\n" +
-                "Pop\n" +
-                "Mood\n" +
-                "Latin");
+    private static void printCategories(Resources res) {
+        List<String> list = res.getCategories();
+        printList(list);
     }
 
-    private static void printFeatured() {
-        System.out.println("---FEATURED---");
-        System.out.println("Mellow Morning\n" +
-                "Wake Up and Smell the Coffee\n" +
-                "Monday Motivation\n" +
-                "Songs to Sing in the Shower");
+    private static void printFeatured(Resources res) {
+        List<String> list = res.getFeatured();
+        printList(list);
     }
 
     private static void printNewRelease(Resources res) {
         List<String> list = res.getNew();
+        printList(list);
+    }
+
+    private static void printList(List<String> list) {
         for (String str : list) {
             System.out.println(str);
             System.out.println();

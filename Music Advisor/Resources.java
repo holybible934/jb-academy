@@ -12,10 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Resources {
-    private static String API_SERVER_PATH = "https://api.spotify.com";
 
-    private String authorizationCode;
-    private String accessToken;
+    private static String API_SERVER_PATH = "https://api.spotify.com";
+    private final String accessToken;
 
     protected Resources(String[] args, String accToken) {
         if (Arrays.asList(args).contains("-resource")) {
@@ -26,19 +25,8 @@ public class Resources {
     }
 
     public List<String> getNew() {
-        HttpClient client = HttpClient.newBuilder().build();
-        HttpRequest request = HttpRequest.newBuilder()
-                .header("Authorization", "Bearer " + accessToken)
-                .uri(URI.create(API_SERVER_PATH + "/v1/browse/new-releases"))
-                .GET()
-                .build();
-        HttpResponse<String> response = null;
+        HttpResponse<String> response = getStringHttpResponse("/v1/browse/new-releases");
         List<String> result = new ArrayList<>();
-        try {
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
         if (response != null) {
             JsonArray items = JsonParser.parseString(response.body()).getAsJsonObject().getAsJsonObject("albums").getAsJsonArray("items");
             for (int i = 0; i < items.size(); i++) {
@@ -57,4 +45,51 @@ public class Resources {
         }
         return result;
     }
+
+    public List<String> getFeatured() {
+        HttpResponse<String> response = getStringHttpResponse("/v1/browse/featured-playlists");
+        List<String> result = new ArrayList<>();
+        if (response != null) {
+            JsonArray items = JsonParser.parseString(response.body()).getAsJsonObject().getAsJsonObject("playlists").getAsJsonArray("items");
+            for (int i = 0; i < items.size(); i++) {
+                JsonObject item = items.get(i).getAsJsonObject();
+                String playlistName = item.get("name").getAsString() + "\n";
+                String externalUrls = item.getAsJsonObject("external_urls").get("spotify").getAsString();
+                result.add((playlistName + externalUrls));
+            }
+        }
+        return result;
+    }
+
+    public List<String> getCategories() {
+        HttpResponse<String> response = getStringHttpResponse("/v1/browse/categories");
+        List<String> result = new ArrayList<>();
+        if (response != null) {
+            JsonArray categories = JsonParser.parseString(response.body()).getAsJsonObject().getAsJsonObject("categories").getAsJsonArray("items");
+            for (int i = 0; i < categories.size(); i++) {
+                JsonObject item = categories.get(i).getAsJsonObject();
+                String category = item.get("name").getAsString();
+                result.add((category));
+            }
+        }
+        return result;
+    }
+
+    private HttpResponse<String> getStringHttpResponse(String targetUrl) {
+        HttpClient client = HttpClient.newBuilder().build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .header("Authorization", "Bearer " + accessToken)
+                .uri(URI.create(API_SERVER_PATH + targetUrl))
+                .GET()
+                .build();
+        HttpResponse<String> response = null;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+
 }
