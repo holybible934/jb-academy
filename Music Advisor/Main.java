@@ -1,15 +1,24 @@
 package advisor;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
+    private static int PAGE_SIZE = 5;
+    private static int currentPageIndex = 0;
+    private static int totalPages = 0;
+    private static List<String> currentList;
+
     public static void main(String[] args) throws IOException, InterruptedException {
         Scanner scanner = new Scanner(System.in);
         String cmd;
         String accessToken = null;
         Resources res = null;
+        if (Arrays.asList(args).contains("-page")) {
+            PAGE_SIZE = Integer.parseInt(args[5]);
+        }
         while (scanner.hasNext()) {
             cmd = scanner.nextLine();
             if (cmd.equals("exit")) {
@@ -34,7 +43,22 @@ public class Main {
                 } else {
                     System.out.println("Not a correct command. Input again!");
                 }
+            } else if (cmd.equals("prev")) {
+                if (currentList.size() == 0 || currentPageIndex == 0) {
+                    System.out.println("No more pages.");
+                } else {
+                    currentPageIndex--;
+                    printList(currentList);
+                }
+            } else if (cmd.equals("next")) {
+                if (currentList.size() == 0 || currentPageIndex + 1 == totalPages) {
+                    System.out.println("No more pages");
+                } else {
+                    currentPageIndex++;
+                    printList(currentList);
+                }
             } else {
+                currentPageIndex = 0;
                 switch (cmd) {
                     case "new":
                         printNewRelease(res);
@@ -86,9 +110,11 @@ public class Main {
     }
 
     private static void printList(List<String> list) {
-        for (String str : list) {
-            System.out.println(str);
-            System.out.println();
+        currentList = list;
+        totalPages = list.size() % PAGE_SIZE == 0? list.size() / PAGE_SIZE : list.size() / PAGE_SIZE + 1;
+        for (int i = currentPageIndex * PAGE_SIZE; i < Math.min((currentPageIndex + 1) * PAGE_SIZE, list.size()); i++) {
+            System.out.println(list.get(i));
         }
+        System.out.printf("---PAGE %d OF %d---%n", currentPageIndex + 1, totalPages);
     }
 }
