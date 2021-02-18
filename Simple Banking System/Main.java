@@ -1,12 +1,13 @@
 package banking;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    private static int ACCOUNT_IDENTIFIER;
     private static String BIN = "400000";
+    private static long USER_COUNT = 0;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -51,13 +52,44 @@ public class Main {
     }
 
     private static BankingUser createUser() {
-        String carNum = BIN + String.format("%010d", ACCOUNT_IDENTIFIER++);
+        String carNum = luhnAlgorithm();
         String myPin = String.format("%04d", (int) (Math.random() * 10000) % 10000);
         BankingUser myUser = new BankingUser(carNum, myPin);
         System.out.println("Your card has been created\n" +
                 "Your card number:\n" + carNum + "\n" +
                 "Your card PIN:\n" + myPin);
         return myUser;
+    }
+
+    private static String luhnAlgorithm() {
+        long[] cardNum = new long[16];
+        for (int i = 0; i < BIN.length(); i++) {
+            cardNum[i] = Integer.parseInt(String.valueOf(BIN.toCharArray()[i]));
+        }
+        long userCount = USER_COUNT;
+        for (int i = cardNum.length - 2; i >= BIN.length(); i--) {
+            cardNum[i] = userCount % 10;
+            userCount /= 10;
+        }
+        long[] copiedCardNum = cardNum.clone();
+        for (int i = 0; i < cardNum.length - 1; i += 2) {
+            copiedCardNum[i] *= 2;
+        }
+        long checkSum = 0;
+        for (long num : copiedCardNum) {
+            if (num >= 10) {
+                num -= 9;
+            }
+            checkSum += num;
+        }
+        while (checkSum > 0) {
+            checkSum -= 10;
+        }
+        cardNum[15] = Math.abs(checkSum);
+        StringBuilder cardNumStr = new StringBuilder();
+        Arrays.stream(cardNum).forEach(cardNumStr::append);
+        USER_COUNT++;
+        return cardNumStr.toString();
     }
 
     private static BankingUser userLogin(Scanner scanner, List<BankingUser> myUsers) {
