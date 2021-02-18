@@ -1,0 +1,46 @@
+type: code
+files:
+- name: src/Main.java
+  visible: true
+  text: "public class Main {\n    private static class TableEntry<T> {\n        private\
+    \ final int key;\n        private final T value;\n\n        public TableEntry(int\
+    \ key, T value) {\n            this.key = key;\n            this.value = value;\n\
+    \        }\n\n        public int getKey() {\n            return key;\n       \
+    \ }\n\n        public T getValue() {\n            return value;\n        }\n \
+    \   }\n\n    private static class HashTable<T> {\n        private int size;\n\
+    \        private TableEntry[] table;\n\n        public HashTable(int size) {\n\
+    \            this.size = size;\n            table = new TableEntry[size];\n  \
+    \      }\n\n        public boolean put(int key, T value) {\n            // put\
+    \ your code here\n        }\n\n        public T get(int key) {\n            int\
+    \ idx = findKey(key);\n\n            if (idx == -1 || table[idx] == null) {\n\
+    \                return null;\n            }\n\n            return (T) table[idx].getValue();\
+    \          \n        }\n\n        private int findKey(int key) {\n           \
+    \ int hash = key % size;\n\n            while (!(table[hash] == null || table[hash].getKey()\
+    \ == key)) {\n                hash = (hash + 1) % size;\n\n                if\
+    \ (hash == key % size) {\n                    return -1;\n                }\n\
+    \            }\n\n            return hash;\n        }\n\n        private void\
+    \ rehash() {\n            // put your code here\n        }\n\n        @Override\n\
+    \        public String toString() {\n            StringBuilder tableStringBuilder\
+    \ = new StringBuilder();\n\n            for (int i = 0; i < table.length; i++)\
+    \ {\n                if (table[i] == null) {\n                    tableStringBuilder.append(i\
+    \ + \": null\");\n                } else {\n                    tableStringBuilder.append(i\
+    \ + \": key=\" + table[i].getKey()\n                                         \
+    \       + \", value=\" + table[i].getValue());\n                }\n\n        \
+    \        if (i < table.length - 1) {\n                    tableStringBuilder.append(\"\
+    \\n\");\n                }\n            }\n\n            return tableStringBuilder.toString();\n\
+    \        }\n    }\n\n    public static void main(String[] args) {\n        //\
+    \ put your code here\n    }\n}"
+  learner_created: false
+feedback_link: https://hyperskill.org/learn/step/6949#comment
+status: Failed
+feedback:
+  message: "Failed test #1 of 5. Runtime error\n\nThis is a sample test from the problem\
+    \ statement!\n\nTest input:\n7\n33 John\n12 Alice\n13 Kate\n44 Tom\n21 Ann\n17\
+    \ Steve\n18 Brown\n\nCorrect output:\n0: null\n1: key=21, value=Ann\n2: key=12,\
+    \ value=Alice\n3: key=33, value=John\n4: key=44, value=Tom\n5: key=13, value=Kate\n\
+    6: null\n7: key=17, value=Steve\n8: key=18, value=Brown\n9: null\n\nYour code\
+    \ output:\n\n\nError:\nException in thread \"main\" java.lang.ArrayIndexOutOfBoundsException:\
+    \ Index -1 out of bounds for length 5\n\tat Main$HashTable.put(Main.java:40)\n\
+    \tat Main.main(Main.java:103)\n"
+  time: Thu, 18 Feb 2021 10:24:35 UTC
+record: -1
