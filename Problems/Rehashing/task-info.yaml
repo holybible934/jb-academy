@@ -32,15 +32,8 @@ files:
     \ put your code here\n    }\n}"
   learner_created: false
 feedback_link: https://hyperskill.org/learn/step/6949#comment
-status: Failed
+status: Solved
 feedback:
-  message: "Failed test #1 of 5. Runtime error\n\nThis is a sample test from the problem\
-    \ statement!\n\nTest input:\n7\n33 John\n12 Alice\n13 Kate\n44 Tom\n21 Ann\n17\
-    \ Steve\n18 Brown\n\nCorrect output:\n0: null\n1: key=21, value=Ann\n2: key=12,\
-    \ value=Alice\n3: key=33, value=John\n4: key=44, value=Tom\n5: key=13, value=Kate\n\
-    6: null\n7: key=17, value=Steve\n8: key=18, value=Brown\n9: null\n\nYour code\
-    \ output:\n\n\nError:\nException in thread \"main\" java.lang.ArrayIndexOutOfBoundsException:\
-    \ Index -1 out of bounds for length 5\n\tat Main$HashTable.put(Main.java:40)\n\
-    \tat Main.main(Main.java:103)\n"
-  time: Thu, 18 Feb 2021 10:24:35 UTC
+  message: <html>Correct solution</html>
+  time: Thu, 18 Feb 2021 11:43:12 UTC
 record: -1

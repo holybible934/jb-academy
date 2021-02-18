@@ -31,9 +31,11 @@ public class Main {
 
         public boolean put(int key, T value) {
             // put your code here
+            if (value == null) {
+                return false;
+            }
             int idx = findKey(key);
             if (idx == -1) {
-                System.out.println("Hit by " + key + ", " + (String) value);
                 rehash();
                 idx = findKey(key);
             }
@@ -67,9 +69,11 @@ public class Main {
 
         private void rehash() {
             // put your code here
-            size += 2;
-            TableEntry[] newTable = Arrays.copyOf(table, size);
-            table = newTable;
+            size *= 2;
+            TableEntry[] oldTable = table;
+            table = new TableEntry[size];
+            Arrays.stream(oldTable)
+                    .forEach(entry -> put(entry.getKey(), (T) entry.getValue()));
         }
 
         @Override
