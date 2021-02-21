@@ -1,17 +1,20 @@
 package banking;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    private static String BIN = "400000";
-    private static long USER_COUNT = 0;
+    private static int USER_COUNT = 0;
+    private static Connection conn;
+    private static String fileName = "myCards.s3db";
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        List<BankingUser> myUsers = new ArrayList<>();
+        List<Card> myUsers = new ArrayList<>();
+        loadDatabase(args);
         printMainMenu();
         while (scanner.hasNextLine()) {
             int cmd = Integer.parseInt(scanner.nextLine());
@@ -23,7 +26,7 @@ public class Main {
                     if (myUsers.size() == 0) {
                         System.out.println("No any user yet");
                     } else {
-                        BankingUser loggonUser = userLogin(scanner, myUsers);
+                        Card loggonUser = userLogin(scanner, myUsers);
                         while (loggonUser != null) {
                             printLoggonMenu();
                             cmd = Integer.parseInt(scanner.nextLine());
@@ -51,18 +54,73 @@ public class Main {
         }
     }
 
-    private static BankingUser createUser() {
+    private static void loadDatabase(String[] args) {
+        String url = "jdbc:sqlite:";
+        if (Arrays.asList(args).contains("-fileName")) {
+            fileName = args[1];
+        }
+        try {
+            conn = DriverManager.getConnection(url + fileName);
+            createTable();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+    }
+
+    private static void createTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS card(\n" +
+                "id INTEGER,\n" +
+                "number TEXT,\n" +
+                "pin TEXT,\n" +
+                "balance INTEGER DEFAULT 0)";
+        try {
+            conn.createStatement().execute(sql);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            System.out.println(throwables.getMessage());
+        }
+    }
+
+    private static Card createUser() {
         String carNum = luhnAlgorithm();
         String myPin = String.format("%04d", (int) (Math.random() * 10000) % 10000);
-        BankingUser myUser = new BankingUser(carNum, myPin);
+        Card myUser = new Card(carNum, myPin);
         System.out.println("Your card has been created\n" +
                 "Your card number:\n" + carNum + "\n" +
                 "Your card PIN:\n" + myPin);
+        storeUser(myUser);
         return myUser;
+    }
+
+    private static void storeUser(Card myUser) {
+        String sql = "INSERT INTO card(id, number, pin) \n" +
+                "VALUES(?, ?, ?);";
+        try {
+            String url = "jdbc:sqlite:";
+            conn = DriverManager.getConnection(url + fileName);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, USER_COUNT);
+            pstmt.setString(2, myUser.getmCardNumber());
+            pstmt.setString(3, myUser.getmPIN());
+            pstmt.executeUpdate();
+            conn.commit();
+            System.out.println("User is stored");
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 
     private static String luhnAlgorithm() {
         long[] cardNum = new long[16];
+        String BIN = "400000";
         for (int i = 0; i < BIN.length(); i++) {
             cardNum[i] = Integer.parseInt(String.valueOf(BIN.toCharArray()[i]));
         }
@@ -92,13 +150,13 @@ public class Main {
         return cardNumStr.toString();
     }
 
-    private static BankingUser userLogin(Scanner scanner, List<BankingUser> myUsers) {
+    private static Card userLogin(Scanner scanner, List<Card> myUsers) {
         System.out.println("Enter your card number:");
         String inputCardNum = scanner.nextLine();
         System.out.println("Enter your PIN:");
         String inputPin = scanner.nextLine();
-        BankingUser logonUser = null;
-        for (BankingUser user : myUsers) {
+        Card logonUser = null;
+        for (Card user : myUsers) {
             if (user.getUserByCardNum(inputCardNum)) {
                 logonUser = user;
             }
