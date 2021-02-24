@@ -2,7 +2,6 @@ package banking;
 
 public class Card {
     private final String mCardNumber;
-
     private final String mPIN;
     private final long mBalance;
 

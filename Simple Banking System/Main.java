@@ -26,16 +26,22 @@ public class Main {
                     if (myUsers.size() == 0) {
                         System.out.println("No any user yet");
                     } else {
-                        Card loggonUser = userLogin(scanner, myUsers);
-                        while (loggonUser != null) {
-                            printLoggonMenu();
+                        Card signInUser = userLogin(scanner, myUsers);
+                        while (signInUser != null) {
+                            printSignInMenu();
                             cmd = Integer.parseInt(scanner.nextLine());
                             switch (cmd) {
                                 case 1:
-                                    System.out.println("Balance: " + loggonUser.getBalance());
+                                    System.out.println("Balance: " + signInUser.getBalance());
                                     break;
-                                case 2:
-                                    loggonUser = null;
+                                case 4:
+                                    closeTheCard(signInUser);
+                                    USER_COUNT--;
+                                    signInUser = null;
+                                    System.out.println("You have successfully closed your account and logged out!");
+                                    break;
+                                case 5:
+                                    signInUser = null;
                                     System.out.println("You have successfully logged out!");
                                     break;
                                 case 0:
@@ -51,6 +57,19 @@ public class Main {
                 default:
             }
             printMainMenu();
+        }
+    }
+
+    private static void closeTheCard(Card signInUser) {
+        String sql = "DELETE FROM card WHERE number = ?;";
+        try {
+            String url = "jdbc:sqlite:";
+            conn = DriverManager.getConnection(url + fileName);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, signInUser.getmCardNumber());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -83,9 +102,9 @@ public class Main {
                 "balance INTEGER DEFAULT 0)";
         try {
             conn.createStatement().execute(sql);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            System.out.println(throwables.getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
@@ -111,10 +130,8 @@ public class Main {
             pstmt.setString(2, myUser.getmCardNumber());
             pstmt.setString(3, myUser.getmPIN());
             pstmt.executeUpdate();
-            conn.commit();
-            System.out.println("User is stored");
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -167,14 +184,18 @@ public class Main {
                 return logonUser;
             } else {
                 System.out.println("Wrong card number or PIN!");
+                logonUser = null;
             }
         }
         return logonUser;
     }
 
-    private static void printLoggonMenu() {
+    private static void printSignInMenu() {
         System.out.println("1. Balance\n" +
-                "2. Log out\n" +
+                "2. Add income\n" +
+                "3. Do transfer\n" +
+                "4. Close account\n" +
+                "5. Log out\n" +
                 "0. Exit");
     }
 
