@@ -141,10 +141,10 @@ public class Main {
         for (int i = 0; i < BIN.length(); i++) {
             cardNum[i] = Integer.parseInt(String.valueOf(BIN.toCharArray()[i]));
         }
-        long userCount = USER_COUNT;
+        long accountIdentifier = (long) (Math.random() * 100000) % 100000;
         for (int i = cardNum.length - 2; i >= BIN.length(); i--) {
-            cardNum[i] = userCount % 10;
-            userCount /= 10;
+            cardNum[i] = accountIdentifier % 10;
+            accountIdentifier /= 10;
         }
         long[] copiedCardNum = cardNum.clone();
         for (int i = 0; i < cardNum.length - 1; i += 2) {
