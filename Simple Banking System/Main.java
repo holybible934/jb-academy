@@ -1,9 +1,7 @@
 package banking;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -13,41 +11,39 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        List<Card> myUsers = new ArrayList<>();
         loadDatabase(args);
         printMainMenu();
         while (scanner.hasNextLine()) {
             int cmd = Integer.parseInt(scanner.nextLine());
             switch (cmd) {
                 case 1:
-                    myUsers.add(createUser());
+                    createUser();
                     break;
                 case 2:
-                    if (myUsers.size() == 0) {
-                        System.out.println("No any user yet");
-                    } else {
-                        Card signInUser = userLogin(scanner, myUsers);
-                        while (signInUser != null) {
-                            printSignInMenu();
-                            cmd = Integer.parseInt(scanner.nextLine());
-                            switch (cmd) {
-                                case 1:
-                                    System.out.println("Balance: " + signInUser.getBalance());
-                                    break;
-                                case 4:
-                                    closeTheCard(signInUser);
-                                    USER_COUNT--;
-                                    signInUser = null;
-                                    System.out.println("You have successfully closed your account and logged out!");
-                                    break;
-                                case 5:
-                                    signInUser = null;
-                                    System.out.println("You have successfully logged out!");
-                                    break;
-                                case 0:
-                                    return;
-                                default:
-                            }
+                    Card signInUser = userLogin(scanner);
+                    while (signInUser != null) {
+                        printSignInMenu();
+                        cmd = Integer.parseInt(scanner.nextLine());
+                        switch (cmd) {
+                            case 1:
+                                System.out.println("Balance: " + signInUser.getBalance());
+                                break;
+                            case 2:
+                                addIncome(scanner.nextInt());
+                                break;
+                            case 4:
+                                closeTheCard(signInUser);
+                                USER_COUNT--;
+                                signInUser = null;
+                                System.out.println("You have successfully closed your account and logged out!");
+                                break;
+                            case 5:
+                                signInUser = null;
+                                System.out.println("You have successfully logged out!");
+                                break;
+                            case 0:
+                                return;
+                            default:
                         }
                     }
                     break;
@@ -58,6 +54,10 @@ public class Main {
             }
             printMainMenu();
         }
+    }
+
+    private static void addIncome(int income) {
+
     }
 
     private static void closeTheCard(Card signInUser) {
@@ -111,7 +111,7 @@ public class Main {
     private static Card createUser() {
         String carNum = luhnAlgorithm();
         String myPin = String.format("%04d", (int) (Math.random() * 10000) % 10000);
-        Card myUser = new Card(carNum, myPin);
+        Card myUser = new Card(carNum, myPin, 0);
         System.out.println("Your card has been created\n" +
                 "Your card number:\n" + carNum + "\n" +
                 "Your card PIN:\n" + myPin);
@@ -167,27 +167,41 @@ public class Main {
         return cardNumStr.toString();
     }
 
-    private static Card userLogin(Scanner scanner, List<Card> myUsers) {
+    private static Card userLogin(Scanner scanner) {
         System.out.println("Enter your card number:");
         String inputCardNum = scanner.nextLine();
         System.out.println("Enter your PIN:");
         String inputPin = scanner.nextLine();
         Card logonUser = null;
-        for (Card user : myUsers) {
-            if (user.getUserByCardNum(inputCardNum)) {
-                logonUser = user;
-            }
+        ResultSet rs = null;
+
+        String sql = "SELECT * FROM card WHERE number = ?";
+        try {
+            String url = "jdbc:sqlite:";
+            conn = DriverManager.getConnection(url + fileName);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, inputCardNum);
+            rs = pstmt.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        try {
+            if (rs != null) {
+                logonUser = new Card(inputCardNum, rs.getString("pin"), rs.getLong("balance"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         if (logonUser != null) {
             if (logonUser.verifyPin(inputPin)) {
                 System.out.println("You have successfully logged in!");
                 return logonUser;
             } else {
                 System.out.println("Wrong card number or PIN!");
-                logonUser = null;
             }
         }
-        return logonUser;
+        return null;
     }
 
     private static void printSignInMenu() {
