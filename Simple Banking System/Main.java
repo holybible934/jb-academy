@@ -29,7 +29,8 @@ public class Main {
                                 System.out.println("Balance: " + signInUser.getBalance());
                                 break;
                             case 2:
-                                addIncome(scanner.nextInt());
+                                System.out.println("Input your deposit amount:");
+                                signInUser = addIncome(signInUser, Integer.parseInt(scanner.nextLine()));
                                 break;
                             case 4:
                                 closeTheCard(signInUser);
@@ -56,20 +57,53 @@ public class Main {
         }
     }
 
-    private static void addIncome(int income) {
+    private static Card addIncome(Card user, int increment) {
+        operateBalance(user.getCardNumber(), user.getBalance() + increment);
+        return reloadUser(user.getCardNumber());
+    }
 
+    private static Card reloadUser(String cardNumber) {
+        String sql = "SELECT * FROM card WHERE number = ?;";
+        ResultSet rs = null;
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, cardNumber);
+            rs = pstmt.executeQuery();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        try {
+            Card user = null;
+            if (rs != null) {
+                user = new Card(rs.getString("number"), rs.getString("pin"), rs.getInt("balance"));
+            }
+            return user;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static void operateBalance(String carNum, int balance) {
+        String sql = "UPDATE card SET balance = ? WHERE number = ?;";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, balance);
+            pstmt.setString(2, carNum);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private static void closeTheCard(Card signInUser) {
         String sql = "DELETE FROM card WHERE number = ?;";
         try {
-            String url = "jdbc:sqlite:";
-            conn = DriverManager.getConnection(url + fileName);
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, signInUser.getmCardNumber());
+            pstmt.setString(1, signInUser.getCardNumber());
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
@@ -127,7 +161,7 @@ public class Main {
             conn = DriverManager.getConnection(url + fileName);
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, USER_COUNT);
-            pstmt.setString(2, myUser.getmCardNumber());
+            pstmt.setString(2, myUser.getCardNumber());
             pstmt.setString(3, myUser.getmPIN());
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -173,25 +207,8 @@ public class Main {
         System.out.println("Enter your PIN:");
         String inputPin = scanner.nextLine();
         Card logonUser = null;
-        ResultSet rs = null;
 
-        String sql = "SELECT * FROM card WHERE number = ?";
-        try {
-            String url = "jdbc:sqlite:";
-            conn = DriverManager.getConnection(url + fileName);
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, inputCardNum);
-            rs = pstmt.executeQuery();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        try {
-            if (rs != null) {
-                logonUser = new Card(inputCardNum, rs.getString("pin"), rs.getLong("balance"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        logonUser = getUser(inputCardNum, logonUser);
 
         if (logonUser != null) {
             if (logonUser.verifyPin(inputPin)) {
@@ -202,6 +219,28 @@ public class Main {
             }
         }
         return null;
+    }
+
+    private static Card getUser(String inputCardNum, Card logonUser) {
+        String sql = "SELECT * FROM card WHERE number = ?";
+        ResultSet rs = null;
+        try {
+//            String url = "jdbc:sqlite:";
+//            conn = DriverManager.getConnection(url + fileName);
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, inputCardNum);
+            rs = pstmt.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (rs != null) {
+                logonUser = new Card(inputCardNum, rs.getString("pin"), rs.getInt("balance"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return logonUser;
     }
 
     private static void printSignInMenu() {

@@ -3,9 +3,9 @@ package banking;
 public class Card {
     private final String mCardNumber;
     private final String mPIN;
-    private final long mBalance;
+    private final int mBalance;
 
-    public Card(String cardNum, String pin, long balance) {
+    public Card(String cardNum, String pin, int balance) {
         this.mCardNumber = cardNum;
         this.mPIN = pin;
         this.mBalance = balance;
@@ -15,7 +15,7 @@ public class Card {
         return inputPin.equals(mPIN);
     }
 
-    String getmCardNumber() {
+    String getCardNumber() {
         return mCardNumber;
     }
 
@@ -23,7 +23,7 @@ public class Card {
         return mPIN;
     }
 
-    long getBalance() {
+    int getBalance() {
         return mBalance;
     }
 }
