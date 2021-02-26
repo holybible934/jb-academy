@@ -29,8 +29,12 @@ public class Main {
                                 System.out.println("Balance: " + signInUser.getBalance());
                                 break;
                             case 2:
-                                System.out.println("Input your deposit amount:");
+                                System.out.println("Enter income:");
                                 signInUser = addIncome(signInUser, Integer.parseInt(scanner.nextLine()));
+                                break;
+                            case 3:
+                                System.out.println("Transfer\nEnter card number:");
+                                signInUser = doTransfer(scanner, signInUser);
                                 break;
                             case 4:
                                 closeTheCard(signInUser);
@@ -57,8 +61,37 @@ public class Main {
         }
     }
 
+    private static Card doTransfer(Scanner scanner, Card user) {
+        String txnDestCardNum = scanner.nextLine();
+        if (txnDestCardNum.equals(user.getCardNumber())) {
+            System.out.println("You can't transfer money to the same account!");
+        } else if (!verifyLuhnAlgo(txnDestCardNum)) {
+            System.out.println("Probably you made a mistake in the card number. Please try again!");
+        } else {
+            Card destUser = reloadUser(txnDestCardNum);
+            if (destUser == null) {
+                System.out.println("Such a card does not exist.");
+            } else {
+                System.out.println("Enter how much money you want to transfer:");
+                int txnAmount = Integer.parseInt(scanner.nextLine());
+                if (txnAmount > user.getBalance()) {
+                    System.out.println("Not enough money!");
+                } else {
+                    user = makeTransaction(user, destUser);
+                    System.out.println("Success");
+                }
+            }
+        }
+        return user;
+    }
+
+    private static Card makeTransaction(Card user, Card destUser) {
+        return user;
+    }
+
     private static Card addIncome(Card user, int increment) {
         operateBalance(user.getCardNumber(), user.getBalance() + increment);
+        System.out.println("Income was added!");
         return reloadUser(user.getCardNumber());
     }
 
@@ -166,6 +199,27 @@ public class Main {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private static boolean verifyLuhnAlgo(String txnDestCardNum) {
+        long[] cardNum = new long[16];
+        for (int i = 0; i < cardNum.length; i++) {
+            cardNum[i] = Integer.parseInt(String.valueOf(txnDestCardNum.toCharArray()[i]));
+        }
+        for (int i = 0; i < cardNum.length - 1; i += 2) {
+            cardNum[i] *= 2;
+        }
+        long checkSum = 0;
+        for (int i = 0; i < cardNum.length - 1; i++) {
+            if (cardNum[i] >= 10) {
+                cardNum[i] -= 9;
+            }
+            checkSum += cardNum[i];
+        }
+        while (checkSum > 0) {
+            checkSum -= 10;
+        }
+        return Math.abs(checkSum) == cardNum[15];
     }
 
     private static String luhnAlgorithm() {
