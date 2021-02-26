@@ -142,7 +142,7 @@ public class Main {
         }
     }
 
-    private static Card createUser() {
+    private static void createUser() {
         String carNum = luhnAlgorithm();
         String myPin = String.format("%04d", (int) (Math.random() * 10000) % 10000);
         Card myUser = new Card(carNum, myPin, 0);
@@ -150,7 +150,6 @@ public class Main {
                 "Your card number:\n" + carNum + "\n" +
                 "Your card PIN:\n" + myPin);
         storeUser(myUser);
-        return myUser;
     }
 
     private static void storeUser(Card myUser) {
@@ -175,7 +174,7 @@ public class Main {
         for (int i = 0; i < BIN.length(); i++) {
             cardNum[i] = Integer.parseInt(String.valueOf(BIN.toCharArray()[i]));
         }
-        long accountIdentifier = (long) (Math.random() * 100000) % 100000;
+        long accountIdentifier = (long) (Math.random() * 10000000) % 10000000;
         for (int i = cardNum.length - 2; i >= BIN.length(); i--) {
             cardNum[i] = accountIdentifier % 10;
             accountIdentifier /= 10;
@@ -225,8 +224,6 @@ public class Main {
         String sql = "SELECT * FROM card WHERE number = ?";
         ResultSet rs = null;
         try {
-//            String url = "jdbc:sqlite:";
-//            conn = DriverManager.getConnection(url + fileName);
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, inputCardNum);
             rs = pstmt.executeQuery();
@@ -257,5 +254,5 @@ public class Main {
                 "2. Log into account\n" +
                 "0. Exit");
     }
-
+    
 }
