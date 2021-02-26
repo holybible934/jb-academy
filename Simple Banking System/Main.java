@@ -9,7 +9,7 @@ public class Main {
     private static Connection conn;
     private static String fileName = "myCards.s3db";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         Scanner scanner = new Scanner(System.in);
         loadDatabase(args);
         printMainMenu();
@@ -47,6 +47,7 @@ public class Main {
                                 System.out.println("You have successfully logged out!");
                                 break;
                             case 0:
+                                conn.close();
                                 return;
                             default:
                         }
@@ -54,6 +55,7 @@ public class Main {
                     break;
                 case 0:
                     System.out.println("Bye");
+                    conn.close();
                     return;
                 default:
             }
@@ -77,15 +79,28 @@ public class Main {
                 if (txnAmount > user.getBalance()) {
                     System.out.println("Not enough money!");
                 } else {
-                    user = makeTransaction(user, destUser);
-                    System.out.println("Success");
+                    user = makeTransaction(user, destUser, txnAmount);
+                    System.out.println("Success!");
                 }
             }
         }
         return user;
     }
 
-    private static Card makeTransaction(Card user, Card destUser) {
+    private static Card makeTransaction(Card user, Card destUser, int txnAmount) {
+        String sql = "UPDATE card SET balance = ? WHERE number = ?;";
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, user.getBalance() - txnAmount);
+            pstmt.setString(2, user.getCardNumber());
+            pstmt.executeUpdate();
+            pstmt.setInt(1, destUser.getBalance() + txnAmount);
+            pstmt.setString(2, destUser.getCardNumber());
+            pstmt.executeUpdate();
+            user = reloadUser(user.getCardNumber());
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
         return user;
     }
 
@@ -259,9 +274,9 @@ public class Main {
         String inputCardNum = scanner.nextLine();
         System.out.println("Enter your PIN:");
         String inputPin = scanner.nextLine();
-        Card logonUser = null;
+        Card logonUser;
 
-        logonUser = getUser(inputCardNum, logonUser);
+        logonUser = getUser(inputCardNum);
 
         if (logonUser != null) {
             if (logonUser.verifyPin(inputPin)) {
@@ -274,15 +289,19 @@ public class Main {
         return null;
     }
 
-    private static Card getUser(String inputCardNum, Card logonUser) {
+    private static Card getUser(String inputCardNum) {
         String sql = "SELECT * FROM card WHERE number = ?";
+        Card logonUser = null;
         ResultSet rs = null;
         try {
+            if (conn.isClosed()) {
+                conn = DriverManager.getConnection("jdbc:sqlite:" + fileName);
+            }
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, inputCardNum);
             rs = pstmt.executeQuery();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         try {
             if (rs != null) {
