@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.hyperskill:hs-test:v8">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.hyperskill/hs-test/v8/e29602b340678e70ca30e24203ceca6ee0da9190/hs-test-v8.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.hyperskill/hs-test/v8/9b742b479038f088f264f128448ba66ae10afe2c/hs-test-v8-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
