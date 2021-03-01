@@ -34,6 +34,7 @@ public class CodeSharingPlatform {
 
     @GetMapping(value = "/api/code")
     public Code getJson(HttpServletResponse response) {
+        code = new Code(code.getCode());
         response.addHeader("Content-Type", "application/json");
         return code;
     }
