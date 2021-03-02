@@ -3,6 +3,8 @@ package platform;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -29,7 +31,12 @@ public class CodeSharingPlatform {
         model.addObject("codeBody", codeBody);
         model.addObject("dateTime", dateTime.toString());
         return model;
+    }
 
+    @GetMapping(value = "/code/new")
+    public ModelAndView getNewCodeHtml(HttpServletResponse response) {
+        response.addHeader("Content-Type", "text/html");
+        return new ModelAndView("newCode");
     }
 
     @GetMapping(value = "/api/code")
@@ -37,6 +44,13 @@ public class CodeSharingPlatform {
         code = new Code(code.getCode());
         response.addHeader("Content-Type", "application/json");
         return code;
+    }
+
+    @PostMapping(value = "/api/code/new")
+    public Code postJson(HttpServletResponse response, @RequestParam Code newCode) {
+        this.code = new Code(newCode.getCode());
+        response.addHeader("Content-Type", "application/json");
+        return null;
     }
 
 }
