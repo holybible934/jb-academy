@@ -25,17 +25,18 @@ public class CodeSharingPlatform {
     public ModelAndView getHtml(HttpServletResponse response) {
         response.addHeader("Content-Type", "text/html");
         String codeBody = code.getCode();
-        LocalDateTime dateTime = code.getDateTime();
+        String date = code.getDate();
 
         ModelAndView model = new ModelAndView("codePage");
         model.addObject("codeBody", codeBody);
-        model.addObject("dateTime", dateTime.toString());
+        model.addObject("date", date);
         return model;
     }
 
     @GetMapping(value = "/code/new")
     public ModelAndView getNewCodeHtml(HttpServletResponse response) {
         response.addHeader("Content-Type", "text/html");
+        ModelAndView model = new ModelAndView("newCode");
         return new ModelAndView("newCode");
     }
 
@@ -50,7 +51,7 @@ public class CodeSharingPlatform {
     public Code postJson(HttpServletResponse response, @RequestParam Code newCode) {
         this.code = new Code(newCode.getCode());
         response.addHeader("Content-Type", "application/json");
-        return null;
+        return code;
     }
 
 }

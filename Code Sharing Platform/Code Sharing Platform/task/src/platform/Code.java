@@ -1,19 +1,21 @@
 package platform;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Code {
 
     private String code;
-    private LocalDateTime dateTime;
+    private String date;
 
     Code(String code) {
         this.code = code;
-        this.dateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        this.date = LocalDateTime.now().format(formatter);
     }
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
+    public String getDate() {
+        return date;
     }
 
     public String getCode() {
