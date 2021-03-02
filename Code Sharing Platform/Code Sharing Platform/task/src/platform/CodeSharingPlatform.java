@@ -24,11 +24,11 @@ public class CodeSharingPlatform {
     @GetMapping(value = "/code")
     public ModelAndView getHtml(HttpServletResponse response) {
         response.addHeader("Content-Type", "text/html");
-        String codeBody = code.getCode();
-        String date = code.getDate();
+        String code = this.code.getCode();
+        String date = this.code.getDate();
 
         ModelAndView model = new ModelAndView("codePage");
-        model.addObject("codeBody", codeBody);
+        model.addObject("code", code);
         model.addObject("date", date);
         return model;
     }
