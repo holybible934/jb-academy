@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
-import java.time.LocalDateTime;
 
 @SpringBootApplication
 @RestController
@@ -41,17 +40,17 @@ public class CodeSharingPlatform {
 
     @GetMapping(value = "/api/code")
     public Code getJson(HttpServletResponse response) {
-        code = new Code(code.getCode());
+        this.code = new Code(code.getCode());
         response.addHeader("Content-Type", "application/json");
         return code;
     }
 
     @PostMapping(value = "/api/code/new")
-    public ObjectNode postJson(HttpServletResponse response, @RequestBody String code) {
-        this.code = new Code(code);
-        ObjectNode node = new ObjectMapper().createObjectNode();
+    public ObjectNode postJson(HttpServletResponse response, @RequestBody ObjectNode code) {
+        this.code = new Code(code.get("code").asText());
+        ObjectNode emptyNode = new ObjectMapper().createObjectNode();
         response.addHeader("Content-Type", "application/json");
-        return node;
+        return emptyNode;
     }
 
 }
