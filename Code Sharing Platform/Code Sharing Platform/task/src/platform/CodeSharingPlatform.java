@@ -48,7 +48,7 @@ public class CodeSharingPlatform {
     }
 
     @PostMapping(value = "/api/code/new")
-    public Code postJson(HttpServletResponse response, @RequestParam Code newCode) {
+    public Code postJson(HttpServletResponse response, @RequestBody String code) {
         this.code = new Code(newCode.getCode());
         response.addHeader("Content-Type", "application/json");
         return code;
