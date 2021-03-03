@@ -1,11 +1,10 @@
 package platform;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
@@ -48,10 +47,11 @@ public class CodeSharingPlatform {
     }
 
     @PostMapping(value = "/api/code/new")
-    public Code postJson(HttpServletResponse response, @RequestBody String code) {
-        this.code = new Code(newCode.getCode());
+    public ObjectNode postJson(HttpServletResponse response, @RequestBody String code) {
+        this.code = new Code(code);
+        ObjectNode node = new ObjectMapper().createObjectNode();
         response.addHeader("Content-Type", "application/json");
-        return code;
+        return node;
     }
 
 }
