@@ -8,12 +8,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootApplication
 @RestController
 public class CodeSharingPlatform {
 
     private Code code = new Code("System.out.println(\"Hello World\");");
+    private final List<Code> codeSnippet = new ArrayList<>();
 
     public static void main(String[] args) {
         SpringApplication.run(CodeSharingPlatform.class, args);
@@ -48,9 +51,20 @@ public class CodeSharingPlatform {
     @PostMapping(value = "/api/code/new")
     public ObjectNode postJson(HttpServletResponse response, @RequestBody ObjectNode code) {
         this.code = new Code(code.get("code").asText());
-        ObjectNode emptyNode = new ObjectMapper().createObjectNode();
+        codeSnippet.add(this.code);
+        ObjectNode node = new ObjectMapper().createObjectNode().put("id", codeSnippet.lastIndexOf(this.code));
         response.addHeader("Content-Type", "application/json");
-        return emptyNode;
+        return node;
+    }
+
+    @GetMapping(value = "/api/code/{id}")
+    public Code getJson(HttpServletResponse response, @PathVariable int id) {
+        response.addHeader("Content-Type", "application/json");
+        if (id > 0) {
+            return codeSnippet.get(id - 1);
+        } else {
+            return null;
+        }
     }
 
 }
