@@ -22,11 +22,11 @@ public class CodeSharingPlatform {
         SpringApplication.run(CodeSharingPlatform.class, args);
     }
 
-    @GetMapping(value = "/code")
-    public ModelAndView getHtml(HttpServletResponse response) {
+    @GetMapping(value = "/code/{id}")
+    public ModelAndView getHtml(HttpServletResponse response, @PathVariable int id) {
         response.addHeader("Content-Type", "text/html");
-        String code = this.code.getCode();
-        String date = this.code.getDate();
+        String code = codeSnippet.get(id).getCode();
+        String date = codeSnippet.get(id).getDate();
 
         ModelAndView model = new ModelAndView("codePage");
         model.addObject("code", code);
