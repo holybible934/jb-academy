@@ -15,7 +15,6 @@ import java.util.List;
 @RestController
 public class CodeSharingPlatform {
 
-    private Code code = new Code("System.out.println(\"Hello World\");");
     private final List<Code> codeSnippet = new ArrayList<>();
 
     public static void main(String[] args) {
@@ -40,7 +39,7 @@ public class CodeSharingPlatform {
 //        String code = codeSnippet.get(id).getCode();
 //        String date = codeSnippet.get(id).getDate();
 
-        ModelAndView model = new ModelAndView("codePage");
+        ModelAndView model = new ModelAndView("latestCodesPage");
 //        model.addObject("code", code);
 //        model.addObject("date", date);
         return model;
@@ -64,9 +63,9 @@ public class CodeSharingPlatform {
 
     @PostMapping(value = "/api/code/new")
     public ObjectNode postJson(HttpServletResponse response, @RequestBody ObjectNode code) {
-        this.code = new Code(code.get("code").asText());
-        codeSnippet.add(this.code);
-        ObjectNode node = new ObjectMapper().createObjectNode().put("id", String.valueOf(codeSnippet.lastIndexOf(this.code)));
+        Code newCode = new Code(code.get("code").asText());
+        codeSnippet.add(newCode);
+        ObjectNode node = new ObjectMapper().createObjectNode().put("id", String.valueOf(codeSnippet.lastIndexOf(newCode)));
         response.addHeader("Content-Type", "application/json");
         return node;
     }
