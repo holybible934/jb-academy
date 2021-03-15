@@ -34,6 +34,18 @@ public class CodeSharingPlatform {
         return model;
     }
 
+    @GetMapping(value = "/code/latest")
+    public ModelAndView getLatestHtml(HttpServletResponse response) {
+        response.addHeader("Content-Type", "text/html");
+//        String code = codeSnippet.get(id).getCode();
+//        String date = codeSnippet.get(id).getDate();
+
+        ModelAndView model = new ModelAndView("codePage");
+//        model.addObject("code", code);
+//        model.addObject("date", date);
+        return model;
+    }
+
     @GetMapping(value = "/code/new")
     public ModelAndView getNewCodeHtml(HttpServletResponse response) {
         response.addHeader("Content-Type", "text/html");
@@ -41,24 +53,26 @@ public class CodeSharingPlatform {
         return new ModelAndView("newCode");
     }
 
-    @GetMapping(value = "/api/code")
-    public Code getJson(HttpServletResponse response) {
-        this.code = new Code(code.getCode());
+    @GetMapping(value = "/api/code/latest")
+    public List<Code> getCodesLatest(HttpServletResponse response) {
         response.addHeader("Content-Type", "application/json");
-        return code;
+        if (codeSnippet.size() < 10) {
+            return codeSnippet;
+        }
+        return codeSnippet.subList(codeSnippet.size() - 10, codeSnippet.size());
     }
 
     @PostMapping(value = "/api/code/new")
     public ObjectNode postJson(HttpServletResponse response, @RequestBody ObjectNode code) {
         this.code = new Code(code.get("code").asText());
         codeSnippet.add(this.code);
-        ObjectNode node = new ObjectMapper().createObjectNode().put("id", codeSnippet.lastIndexOf(this.code));
+        ObjectNode node = new ObjectMapper().createObjectNode().put("id", String.valueOf(codeSnippet.lastIndexOf(this.code)));
         response.addHeader("Content-Type", "application/json");
         return node;
     }
 
     @GetMapping(value = "/api/code/{id}")
-    public Code getJson(HttpServletResponse response, @PathVariable int id) {
+    public Code getCodeWithId(HttpServletResponse response, @PathVariable int id) {
         response.addHeader("Content-Type", "application/json");
         if (id > 0) {
             return codeSnippet.get(id - 1);
