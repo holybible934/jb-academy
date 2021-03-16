@@ -10,7 +10,9 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SpringBootApplication
 @RestController
@@ -25,16 +27,8 @@ public class CodeSharingPlatform {
     @GetMapping(value = "/code/{id}")
     public ModelAndView getHtml(HttpServletResponse response, @PathVariable int id) {
         response.addHeader("Content-Type", "text/html");
-        String code;
-        String date;
-//        if (id == 0 && codeSnippet.size() > 1) {
-//            code = codeSnippet.get(id + 1).getCode();
-//            date = codeSnippet.get(id + 1).getDate();
-//        } else {
-            code = codeSnippet.get(id - 1).getCode();
-            date = codeSnippet.get(id - 1).getDate();
-//        }
-
+        String code = codeSnippet.get(id - 1).getCode();
+        String date = codeSnippet.get(id - 1).getDate();
         ModelAndView model = new ModelAndView("codePage");
         model.addObject("code", code);
         model.addObject("date", date);
@@ -45,11 +39,15 @@ public class CodeSharingPlatform {
     public ModelAndView getLatestHtml(HttpServletResponse response) {
         response.addHeader("Content-Type", "text/html");
         ModelAndView model = new ModelAndView("latestCodesPage");
-        Collections.reverse(codeSnippet);
-        if (codeSnippet.size() < 10) {
-            model.addObject("snippets", codeSnippet);
+//        codeSnippet = codeSnippet.stream().sorted().collect(Collectors.toList());
+        List<Code> sortedCodeSnippets = codeSnippet.stream()
+                .sorted(Comparator.comparing(Code::getDate))
+                .collect(Collectors.toList());
+        Collections.reverse(sortedCodeSnippets);
+        if (sortedCodeSnippets.size() < 10) {
+            model.addObject("snippets", sortedCodeSnippets);
         } else {
-            model.addObject("snippets", codeSnippet.subList(codeSnippet.size() - 10, codeSnippet.size()));
+            model.addObject("snippets", sortedCodeSnippets.subList(sortedCodeSnippets.size() - 10, sortedCodeSnippets.size()));
         }
         return model;
     }
@@ -64,11 +62,14 @@ public class CodeSharingPlatform {
     @GetMapping(value = "/api/code/latest")
     public List<Code> getCodesLatest(HttpServletResponse response) {
         response.addHeader("Content-Type", "application/json");
-        Collections.reverse(codeSnippet);
-        if (codeSnippet.size() < 10) {
-            return codeSnippet;
+        List<Code> sortedCodeSnippets = codeSnippet.stream()
+                .sorted(Comparator.comparing(Code::getDate))
+                .collect(Collectors.toList());
+        Collections.reverse(sortedCodeSnippets);
+        if (sortedCodeSnippets.size() < 10) {
+            return sortedCodeSnippets;
         }
-        return codeSnippet.subList(codeSnippet.size() - 10, codeSnippet.size());
+        return sortedCodeSnippets.subList(sortedCodeSnippets.size() - 10, sortedCodeSnippets.size());
     }
 
     @PostMapping(value = "/api/code/new")
@@ -77,7 +78,7 @@ public class CodeSharingPlatform {
         codeSnippet.add(newCode);
         ObjectNode node = new ObjectMapper().createObjectNode().put("id", String.valueOf(codeSnippet.lastIndexOf(newCode) + 1));
         response.addHeader("Content-Type", "application/json");
-//        System.out.println("POST: Id is " + String.valueOf(codeSnippet.lastIndexOf(newCode)) + ", code is " + codeSnippet.get(codeSnippet.lastIndexOf(newCode)).getCode());
+        System.out.println("POST: Id is " + (codeSnippet.lastIndexOf(newCode) + 1) + ", code is " + codeSnippet.get(codeSnippet.lastIndexOf(newCode)).getCode());
         return node;
     }
 
@@ -88,13 +89,6 @@ public class CodeSharingPlatform {
         ObjectNode node = new ObjectMapper().createObjectNode();
         node.put("code", codeSnippet.get(id - 1).getCode());
         node.put("date", codeSnippet.get(id - 1).getDate());
-//        if (id == 0) {
-//            node.put("code", codeSnippet.get(id).getCode());
-//            node.put("date", codeSnippet.get(id).getDate());
-//        } else {
-//            node.put("code", codeSnippet.get(id - 1).getCode());
-//            node.put("date", codeSnippet.get(id - 1).getDate());
-//        }
         return node;
     }
 
