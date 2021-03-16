@@ -39,7 +39,6 @@ public class CodeSharingPlatform {
     public ModelAndView getLatestHtml(HttpServletResponse response) {
         response.addHeader("Content-Type", "text/html");
         ModelAndView model = new ModelAndView("latestCodesPage");
-//        codeSnippet = codeSnippet.stream().sorted().collect(Collectors.toList());
         List<Code> sortedCodeSnippets = codeSnippet.stream()
                 .sorted(Comparator.comparing(Code::getDate))
                 .collect(Collectors.toList());
@@ -47,7 +46,7 @@ public class CodeSharingPlatform {
         if (sortedCodeSnippets.size() < 10) {
             model.addObject("snippets", sortedCodeSnippets);
         } else {
-            model.addObject("snippets", sortedCodeSnippets.subList(sortedCodeSnippets.size() - 10, sortedCodeSnippets.size()));
+            model.addObject("snippets", sortedCodeSnippets.subList(0, 10));
         }
         return model;
     }
@@ -55,7 +54,6 @@ public class CodeSharingPlatform {
     @GetMapping(value = "/code/new")
     public ModelAndView getNewCodeHtml(HttpServletResponse response) {
         response.addHeader("Content-Type", "text/html");
-        ModelAndView model = new ModelAndView("newCode");
         return new ModelAndView("newCode");
     }
 
@@ -69,7 +67,7 @@ public class CodeSharingPlatform {
         if (sortedCodeSnippets.size() < 10) {
             return sortedCodeSnippets;
         }
-        return sortedCodeSnippets.subList(sortedCodeSnippets.size() - 10, sortedCodeSnippets.size());
+        return sortedCodeSnippets.subList(0, 10);
     }
 
     @PostMapping(value = "/api/code/new")
@@ -78,14 +76,14 @@ public class CodeSharingPlatform {
         codeSnippet.add(newCode);
         ObjectNode node = new ObjectMapper().createObjectNode().put("id", String.valueOf(codeSnippet.lastIndexOf(newCode) + 1));
         response.addHeader("Content-Type", "application/json");
-        System.out.println("POST: Id is " + (codeSnippet.lastIndexOf(newCode) + 1) + ", code is " + codeSnippet.get(codeSnippet.lastIndexOf(newCode)).getCode());
+//        System.out.println("POST: Id is " + (codeSnippet.lastIndexOf(newCode) + 1) + ", code is " + codeSnippet.get(codeSnippet.lastIndexOf(newCode)).getCode());
         return node;
     }
 
     @GetMapping(value = "/api/code/{id}")
     public ObjectNode getCodeWithId(HttpServletResponse response, @PathVariable int id) {
         response.addHeader("Content-Type", "application/json");
-        System.out.println("GET: Id is " + id + ", code is " + codeSnippet.get(id - 1).getCode());
+//        System.out.println("GET: Id is " + id + ", code is " + codeSnippet.get(id - 1).getCode());
         ObjectNode node = new ObjectMapper().createObjectNode();
         node.put("code", codeSnippet.get(id - 1).getCode());
         node.put("date", codeSnippet.get(id - 1).getDate());
