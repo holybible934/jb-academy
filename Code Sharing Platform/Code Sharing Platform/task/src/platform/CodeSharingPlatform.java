@@ -76,10 +76,10 @@ public class CodeSharingPlatform {
     @GetMapping(value = "/api/code/{id}")
     public Code getCodeWithId(HttpServletResponse response, @PathVariable int id) {
         response.addHeader("Content-Type", "application/json");
-        if ((id > 0) && (id < codeSnippet.size())) {
-            return codeSnippet.get(id - 1);
+        if ((id >= 0) && (id < codeSnippet.size())) {
+            return codeSnippet.get(id);
         } else {
-            return new Code("public static void ...");
+            return new Code("class Code { ...");
         }
     }
 
