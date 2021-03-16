@@ -25,8 +25,15 @@ public class CodeSharingPlatform {
     @GetMapping(value = "/code/{id}")
     public ModelAndView getHtml(HttpServletResponse response, @PathVariable int id) {
         response.addHeader("Content-Type", "text/html");
-        String code = codeSnippet.get(id).getCode();
-        String date = codeSnippet.get(id).getDate();
+        String code;
+        String date;
+//        if (id == 0 && codeSnippet.size() > 1) {
+//            code = codeSnippet.get(id + 1).getCode();
+//            date = codeSnippet.get(id + 1).getDate();
+//        } else {
+            code = codeSnippet.get(id - 1).getCode();
+            date = codeSnippet.get(id - 1).getDate();
+//        }
 
         ModelAndView model = new ModelAndView("codePage");
         model.addObject("code", code);
@@ -68,19 +75,26 @@ public class CodeSharingPlatform {
     public ObjectNode postJson(HttpServletResponse response, @RequestBody ObjectNode code) {
         Code newCode = new Code(code.get("code").asText());
         codeSnippet.add(newCode);
-        ObjectNode node = new ObjectMapper().createObjectNode().put("id", String.valueOf(codeSnippet.lastIndexOf(newCode)));
+        ObjectNode node = new ObjectMapper().createObjectNode().put("id", String.valueOf(codeSnippet.lastIndexOf(newCode) + 1));
         response.addHeader("Content-Type", "application/json");
+//        System.out.println("POST: Id is " + String.valueOf(codeSnippet.lastIndexOf(newCode)) + ", code is " + codeSnippet.get(codeSnippet.lastIndexOf(newCode)).getCode());
         return node;
     }
 
     @GetMapping(value = "/api/code/{id}")
     public ObjectNode getCodeWithId(HttpServletResponse response, @PathVariable int id) {
         response.addHeader("Content-Type", "application/json");
+        System.out.println("GET: Id is " + id + ", code is " + codeSnippet.get(id - 1).getCode());
         ObjectNode node = new ObjectMapper().createObjectNode();
-        if ((id >= 0)) {
-            node.put("code", codeSnippet.get(id).getCode());
-            node.put("date", codeSnippet.get(id).getDate());
-        }
+        node.put("code", codeSnippet.get(id - 1).getCode());
+        node.put("date", codeSnippet.get(id - 1).getDate());
+//        if (id == 0) {
+//            node.put("code", codeSnippet.get(id).getCode());
+//            node.put("date", codeSnippet.get(id).getDate());
+//        } else {
+//            node.put("code", codeSnippet.get(id - 1).getCode());
+//            node.put("date", codeSnippet.get(id - 1).getDate());
+//        }
         return node;
     }
 
