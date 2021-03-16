@@ -5,9 +5,9 @@
     <title>Latest</title>
 </head>
 <body>
-<span th:each="snippet : ${snippets}">
-<div id="load_date" th:text="${snippet.date}"></div>
-<pre id="code_snippet" th:text="${snippet.code}"></pre>
-</span>
+<div th:each="snippet : ${snippets}">
+    <span id="load_date" th:text="${snippet.date}"></span>
+    <pre id="code_snippet" th:text="${snippet.code}"></pre>
+</div>
 </body>
 </html>

@@ -38,7 +38,12 @@ public class CodeSharingPlatform {
     public ModelAndView getLatestHtml(HttpServletResponse response) {
         response.addHeader("Content-Type", "text/html");
         ModelAndView model = new ModelAndView("latestCodesPage");
-        model.addObject("snippets", codeSnippet);
+        Collections.reverse(codeSnippet);
+        if (codeSnippet.size() < 10) {
+            model.addObject("snippets", codeSnippet);
+        } else {
+            model.addObject("snippets", codeSnippet.subList(codeSnippet.size() - 10, codeSnippet.size()));
+        }
         return model;
     }
 
@@ -52,6 +57,7 @@ public class CodeSharingPlatform {
     @GetMapping(value = "/api/code/latest")
     public List<Code> getCodesLatest(HttpServletResponse response) {
         response.addHeader("Content-Type", "application/json");
+        Collections.reverse(codeSnippet);
         if (codeSnippet.size() < 10) {
             return codeSnippet;
         }
@@ -62,7 +68,6 @@ public class CodeSharingPlatform {
     public ObjectNode postJson(HttpServletResponse response, @RequestBody ObjectNode code) {
         Code newCode = new Code(code.get("code").asText());
         codeSnippet.add(newCode);
-        Collections.reverse(codeSnippet);
         ObjectNode node = new ObjectMapper().createObjectNode().put("id", String.valueOf(codeSnippet.lastIndexOf(newCode)));
         response.addHeader("Content-Type", "application/json");
         return node;
