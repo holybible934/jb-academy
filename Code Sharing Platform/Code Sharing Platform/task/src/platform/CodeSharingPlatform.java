@@ -74,13 +74,14 @@ public class CodeSharingPlatform {
     }
 
     @GetMapping(value = "/api/code/{id}")
-    public Code getCodeWithId(HttpServletResponse response, @PathVariable int id) {
+    public ObjectNode getCodeWithId(HttpServletResponse response, @PathVariable int id) {
         response.addHeader("Content-Type", "application/json");
-        if ((id >= 0) && (id < codeSnippet.size())) {
-            return codeSnippet.get(id);
-        } else {
-            return new Code("class Code { ...");
+        ObjectNode node = new ObjectMapper().createObjectNode();
+        if ((id >= 0)) {
+            node.put("code", codeSnippet.get(id).getCode());
+            node.put("date", codeSnippet.get(id).getDate());
         }
+        return node;
     }
 
 }
