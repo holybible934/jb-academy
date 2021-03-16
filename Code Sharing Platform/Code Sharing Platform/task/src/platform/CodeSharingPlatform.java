@@ -9,6 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @SpringBootApplication
@@ -36,12 +37,8 @@ public class CodeSharingPlatform {
     @GetMapping(value = "/code/latest")
     public ModelAndView getLatestHtml(HttpServletResponse response) {
         response.addHeader("Content-Type", "text/html");
-//        String code = codeSnippet.get(id).getCode();
-//        String date = codeSnippet.get(id).getDate();
-
         ModelAndView model = new ModelAndView("latestCodesPage");
-//        model.addObject("code", code);
-//        model.addObject("date", date);
+        model.addObject("snippets", codeSnippet);
         return model;
     }
 
@@ -65,6 +62,7 @@ public class CodeSharingPlatform {
     public ObjectNode postJson(HttpServletResponse response, @RequestBody ObjectNode code) {
         Code newCode = new Code(code.get("code").asText());
         codeSnippet.add(newCode);
+        Collections.reverse(codeSnippet);
         ObjectNode node = new ObjectMapper().createObjectNode().put("id", String.valueOf(codeSnippet.lastIndexOf(newCode)));
         response.addHeader("Content-Type", "application/json");
         return node;
