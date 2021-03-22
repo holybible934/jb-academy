@@ -1,12 +1,19 @@
 package platform;
 
+import org.springframework.data.annotation.Id;
+
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Entity(name = "snippets")
 public class CodeSnippet {
 
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    private int id;
     private String code;
     private String date;
 
@@ -24,7 +31,8 @@ public class CodeSnippet {
         return code;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public int getId() {
+        return id;
     }
+
 }
