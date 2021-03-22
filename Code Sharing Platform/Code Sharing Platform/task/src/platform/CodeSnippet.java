@@ -1,14 +1,16 @@
 package platform;
 
+import javax.persistence.Entity;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Code {
+@Entity(name = "snippets")
+public class CodeSnippet {
 
     private String code;
     private String date;
 
-    Code(String code) {
+    CodeSnippet(String code) {
         this.code = code;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         this.date = LocalDateTime.now().format(formatter);

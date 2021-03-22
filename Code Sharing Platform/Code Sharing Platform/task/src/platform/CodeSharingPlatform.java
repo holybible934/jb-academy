@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @RestController
 public class CodeSharingPlatform {
 
-    private final List<Code> codeSnippet = new ArrayList<>();
+    private final List<CodeSnippet> codeSnippet = new ArrayList<>();
 
     public static void main(String[] args) {
         SpringApplication.run(CodeSharingPlatform.class, args);
@@ -39,8 +39,8 @@ public class CodeSharingPlatform {
     public ModelAndView getLatestHtml(HttpServletResponse response) {
         response.addHeader("Content-Type", "text/html");
         ModelAndView model = new ModelAndView("latestCodesPage");
-        List<Code> sortedCodeSnippets = codeSnippet.stream()
-                .sorted(Comparator.comparing(Code::getDate))
+        List<CodeSnippet> sortedCodeSnippets = codeSnippet.stream()
+                .sorted(Comparator.comparing(CodeSnippet::getDate))
                 .collect(Collectors.toList());
         Collections.reverse(sortedCodeSnippets);
         if (sortedCodeSnippets.size() < 10) {
@@ -58,10 +58,10 @@ public class CodeSharingPlatform {
     }
 
     @GetMapping(value = "/api/code/latest")
-    public List<Code> getCodesLatest(HttpServletResponse response) {
+    public List<CodeSnippet> getCodesLatest(HttpServletResponse response) {
         response.addHeader("Content-Type", "application/json");
-        List<Code> sortedCodeSnippets = codeSnippet.stream()
-                .sorted(Comparator.comparing(Code::getDate))
+        List<CodeSnippet> sortedCodeSnippets = codeSnippet.stream()
+                .sorted(Comparator.comparing(CodeSnippet::getDate))
                 .collect(Collectors.toList());
         Collections.reverse(sortedCodeSnippets);
         if (sortedCodeSnippets.size() < 10) {
@@ -72,7 +72,7 @@ public class CodeSharingPlatform {
 
     @PostMapping(value = "/api/code/new")
     public ObjectNode postJson(HttpServletResponse response, @RequestBody ObjectNode code) {
-        Code newCode = new Code(code.get("code").asText());
+        CodeSnippet newCode = new CodeSnippet(code.get("code").asText());
         codeSnippet.add(newCode);
         ObjectNode node = new ObjectMapper().createObjectNode().put("id", String.valueOf(codeSnippet.lastIndexOf(newCode) + 1));
         response.addHeader("Content-Type", "application/json");
