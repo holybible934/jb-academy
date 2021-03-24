@@ -18,7 +18,12 @@ import java.util.stream.Collectors;
 @RestController
 public class CodeSharingPlatform {
 
-    private final List<CodeSnippet> codeSnippet = new ArrayList<>();
+    //private final List<CodeSnippet> codeSnippet = new ArrayList<>();
+    private final CodeSnippetRepository repository;
+
+    CodeSharingPlatform(CodeSnippetRepository repository) {
+        this.repository = repository;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(CodeSharingPlatform.class, args);
@@ -27,8 +32,9 @@ public class CodeSharingPlatform {
     @GetMapping(value = "/code/{id}")
     public ModelAndView getHtml(HttpServletResponse response, @PathVariable int id) {
         response.addHeader("Content-Type", "text/html");
-        String code = codeSnippet.get(id - 1).getCode();
-        String date = codeSnippet.get(id - 1).getDate();
+        CodeSnippet snippet = repository.findById(id);
+        String code = snippet.getCode();
+        String date = snippet.getDate();
         ModelAndView model = new ModelAndView("codePage");
         model.addObject("code", code);
         model.addObject("date", date);
@@ -39,15 +45,17 @@ public class CodeSharingPlatform {
     public ModelAndView getLatestHtml(HttpServletResponse response) {
         response.addHeader("Content-Type", "text/html");
         ModelAndView model = new ModelAndView("latestCodesPage");
-        List<CodeSnippet> sortedCodeSnippets = codeSnippet.stream()
-                .sorted(Comparator.comparing(CodeSnippet::getDate))
-                .collect(Collectors.toList());
-        Collections.reverse(sortedCodeSnippets);
-        if (sortedCodeSnippets.size() < 10) {
-            model.addObject("snippets", sortedCodeSnippets);
-        } else {
-            model.addObject("snippets", sortedCodeSnippets.subList(0, 10));
-        }
+        List<CodeSnippet> sortedCodeSnippets = repository.findTop10OrderByIdDesc();
+//        List<CodeSnippet> sortedCodeSnippets = codeSnippet.stream()
+//                .sorted(Comparator.comparing(CodeSnippet::getDate))
+//                .collect(Collectors.toList());
+//        Collections.reverse(sortedCodeSnippets);
+//        if (sortedCodeSnippets.size() < 10) {
+//            model.addObject("snippets", sortedCodeSnippets);
+//        } else {
+//            model.addObject("snippets", sortedCodeSnippets.subList(0, 10));
+//        }
+        model.addObject("snippets", sortedCodeSnippets);
         return model;
     }
 
@@ -60,21 +68,23 @@ public class CodeSharingPlatform {
     @GetMapping(value = "/api/code/latest")
     public List<CodeSnippet> getCodesLatest(HttpServletResponse response) {
         response.addHeader("Content-Type", "application/json");
-        List<CodeSnippet> sortedCodeSnippets = codeSnippet.stream()
-                .sorted(Comparator.comparing(CodeSnippet::getDate))
-                .collect(Collectors.toList());
-        Collections.reverse(sortedCodeSnippets);
-        if (sortedCodeSnippets.size() < 10) {
-            return sortedCodeSnippets;
-        }
-        return sortedCodeSnippets.subList(0, 10);
+        List<CodeSnippet> sortedCodeSnippets = repository.findTop10OrderByIdDesc();
+//        List<CodeSnippet> sortedCodeSnippets = codeSnippet.stream()
+//                .sorted(Comparator.comparing(CodeSnippet::getDate))
+//                .collect(Collectors.toList());
+//        Collections.reverse(sortedCodeSnippets);
+//        if (sortedCodeSnippets.size() < 10) {
+//            return sortedCodeSnippets;
+//        }
+        return sortedCodeSnippets;
     }
 
     @PostMapping(value = "/api/code/new")
     public ObjectNode postJson(HttpServletResponse response, @RequestBody ObjectNode code) {
         CodeSnippet newCode = new CodeSnippet(code.get("code").asText());
-        codeSnippet.add(newCode);
-        ObjectNode node = new ObjectMapper().createObjectNode().put("id", String.valueOf(codeSnippet.lastIndexOf(newCode) + 1));
+        CodeSnippet snippet = repository.save(newCode);
+        //codeSnippet.add(newCode);
+        ObjectNode node = new ObjectMapper().createObjectNode().put("id", String.valueOf(snippet.getId()));
         response.addHeader("Content-Type", "application/json");
 //        System.out.println("POST: Id is " + (codeSnippet.lastIndexOf(newCode) + 1) + ", code is " + codeSnippet.get(codeSnippet.lastIndexOf(newCode)).getCode());
         return node;
@@ -83,10 +93,11 @@ public class CodeSharingPlatform {
     @GetMapping(value = "/api/code/{id}")
     public ObjectNode getCodeWithId(HttpServletResponse response, @PathVariable int id) {
         response.addHeader("Content-Type", "application/json");
+        CodeSnippet snippet = repository.findById(id);
 //        System.out.println("GET: Id is " + id + ", code is " + codeSnippet.get(id - 1).getCode());
         ObjectNode node = new ObjectMapper().createObjectNode();
-        node.put("code", codeSnippet.get(id - 1).getCode());
-        node.put("date", codeSnippet.get(id - 1).getDate());
+        node.put("code", snippet.getCode());
+        node.put("date", snippet.getDate());
         return node;
     }
 
