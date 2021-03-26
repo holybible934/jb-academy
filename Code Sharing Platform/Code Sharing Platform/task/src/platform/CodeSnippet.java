@@ -1,20 +1,27 @@
 package platform;
 
-import org.springframework.data.annotation.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.persistence.Id;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Entity(name = "snippets")
+@Entity
 public class CodeSnippet {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private int id;
+    @JsonIgnore
+    private long id;
+
+    @Column(name = "code", columnDefinition = "TEXT", nullable = false)
     private String code;
+
+    @Column(name = "date", nullable = false)
     private String date;
 
     CodeSnippet(String code) {
@@ -31,7 +38,7 @@ public class CodeSnippet {
         return code;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

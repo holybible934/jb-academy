@@ -2,8 +2,10 @@ package platform;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -15,12 +17,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @SpringBootApplication
-@RestController
+@Controller
 public class CodeSharingPlatform {
 
     //private final List<CodeSnippet> codeSnippet = new ArrayList<>();
     private final CodeSnippetRepository repository;
 
+    @Autowired
     CodeSharingPlatform(CodeSnippetRepository repository) {
         this.repository = repository;
     }
@@ -30,7 +33,7 @@ public class CodeSharingPlatform {
     }
 
     @GetMapping(value = "/code/{id}")
-    public ModelAndView getHtml(HttpServletResponse response, @PathVariable int id) {
+    public ModelAndView getHtml(HttpServletResponse response, @PathVariable long id) {
         response.addHeader("Content-Type", "text/html");
         CodeSnippet snippet = repository.findById(id);
         String code = snippet.getCode();
@@ -45,7 +48,7 @@ public class CodeSharingPlatform {
     public ModelAndView getLatestHtml(HttpServletResponse response) {
         response.addHeader("Content-Type", "text/html");
         ModelAndView model = new ModelAndView("latestCodesPage");
-        List<CodeSnippet> sortedCodeSnippets = repository.findTop10OrderByIdDesc();
+        List<CodeSnippet> sortedCodeSnippets = repository.findTop10ByOrderByDateDesc();
 //        List<CodeSnippet> sortedCodeSnippets = codeSnippet.stream()
 //                .sorted(Comparator.comparing(CodeSnippet::getDate))
 //                .collect(Collectors.toList());
@@ -68,7 +71,7 @@ public class CodeSharingPlatform {
     @GetMapping(value = "/api/code/latest")
     public List<CodeSnippet> getCodesLatest(HttpServletResponse response) {
         response.addHeader("Content-Type", "application/json");
-        List<CodeSnippet> sortedCodeSnippets = repository.findTop10OrderByIdDesc();
+        List<CodeSnippet> sortedCodeSnippets = repository.findTop10ByOrderByDateDesc();
 //        List<CodeSnippet> sortedCodeSnippets = codeSnippet.stream()
 //                .sorted(Comparator.comparing(CodeSnippet::getDate))
 //                .collect(Collectors.toList());
@@ -91,7 +94,7 @@ public class CodeSharingPlatform {
     }
 
     @GetMapping(value = "/api/code/{id}")
-    public ObjectNode getCodeWithId(HttpServletResponse response, @PathVariable int id) {
+    public ObjectNode getCodeWithId(HttpServletResponse response, @PathVariable long id) {
         response.addHeader("Content-Type", "application/json");
         CodeSnippet snippet = repository.findById(id);
 //        System.out.println("GET: Id is " + id + ", code is " + codeSnippet.get(id - 1).getCode());
