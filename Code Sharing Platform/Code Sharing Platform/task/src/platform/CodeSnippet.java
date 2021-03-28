@@ -24,10 +24,13 @@ public class CodeSnippet {
     @Column(name = "date", nullable = false)
     private String date;
 
-    CodeSnippet(String code) {
-        this.code = code;
+    public CodeSnippet() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         this.date = LocalDateTime.now().format(formatter);
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getDate() {
