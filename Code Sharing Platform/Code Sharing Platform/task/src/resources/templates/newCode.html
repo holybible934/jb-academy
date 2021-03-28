@@ -6,7 +6,12 @@
 </head>
 <body>
 <textarea id="code_snippet" th:text="${code}"></textarea>
-<button id="send_snippet" type="submit" onclick="send()">Submit</button>.
+<br>
+Time restriction:<input id="time_restriction" type="text" th:text="${time}"> Seconds</input>
+<br>
+Views restriction:<input id="views_restriction" type="text" th:text="${views}"> Views</input>
+<br>
+<button id="send_snippet" type="submit" onclick="send()">Submit</button>
 <script>
 function send() {
     let object = {
