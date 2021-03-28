@@ -413,6 +413,90 @@ files:
         }
     }
   learner_created: false
+- name: src/resources/templates/codePage.html
+  visible: true
+  text: |-
+    <!DOCTYPE html>
+    <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="UTF-8">
+        <title>Code</title>
+    </head>
+    <body>
+    <span id="load_date" th:text="${date}"></span>
+    <pre id="code_snippet" th:text="${code}">
+    </pre>
+    </body>
+    </html>
+  learner_created: true
+- name: src/platform/Code.java
+  visible: true
+  text: |-
+    package platform;
+
+    import java.time.LocalDateTime;
+    import java.time.format.DateTimeFormatter;
+
+    public class Code {
+
+        private String code;
+        private String date;
+
+        Code(String code) {
+            this.code = code;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            this.date = LocalDateTime.now().format(formatter);
+        }
+
+        public String getDate() {
+            return date;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
+  learner_created: true
+- name: src/resources/templates/newCode.html
+  visible: true
+  text: |-
+    <!DOCTYPE html>
+    <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="UTF-8">
+        <title>Create</title>
+    </head>
+    <body>
+    <textarea id="code_snippet" th:text="${codeBody}"></textarea>
+    <button id="send_snippet" type="submit" onclick="send()">Submit</button>.
+    <script>
+    function send() {
+        let object = {
+            "code": document.getElementById("code_snippet").value
+        };
+
+        let json = JSON.stringify(object);
+
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", '/api/code/new', false)
+        xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        xhr.send(json);
+
+        if (xhr.status == 200) {
+          alert("Success!");
+        }
+    }
+    </script>
+    </body>
+    </html>
+  learner_created: true
+- name: src/resources/templates/latestCodesPage.html
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/130/stages/694/implement#comment
-status: Unchecked
-record: -1
+status: Solved
+record: 3
