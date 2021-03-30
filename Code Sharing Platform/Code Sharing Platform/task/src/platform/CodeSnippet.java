@@ -24,6 +24,12 @@ public class CodeSnippet {
     @Column(name = "date", nullable = false)
     private String date;
 
+    @Column(name = "views")
+    private long views;
+
+    @Column(name = "time")
+    private String time;
+
     public CodeSnippet() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         this.date = LocalDateTime.now().format(formatter);
@@ -43,6 +49,22 @@ public class CodeSnippet {
 
     public Long getId() {
         return id;
+    }
+
+    public long getViews() {
+        return views;
+    }
+
+    public void setViews(long views) {
+        this.views = views;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 
 }
