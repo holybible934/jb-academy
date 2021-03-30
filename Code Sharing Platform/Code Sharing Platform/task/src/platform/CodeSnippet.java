@@ -24,8 +24,11 @@ public class CodeSnippet {
     @Column(name = "date", nullable = false)
     private String date;
 
-    @Column(name = "views")
-    private long views;
+    @Column(name = "view_count")
+    private long viewCount;
+
+    @Column(name = "viewed_count")
+    private long viewedCount;
 
     @Column(name = "time")
     private String time;
@@ -51,12 +54,12 @@ public class CodeSnippet {
         return id;
     }
 
-    public long getViews() {
-        return views;
+    public long getViewCount() {
+        return viewCount;
     }
 
-    public void setViews(long views) {
-        this.views = views;
+    public void setViewCount(long viewCount) {
+        this.viewCount = viewCount;
     }
 
     public String getTime() {
@@ -67,4 +70,11 @@ public class CodeSnippet {
         this.time = time;
     }
 
+    public long getViewedCount() {
+        return viewedCount;
+    }
+
+    public void setViewedCount(long viewedCount) {
+        this.viewedCount = viewedCount;
+    }
 }
