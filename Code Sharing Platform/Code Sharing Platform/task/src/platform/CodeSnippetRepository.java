@@ -5,6 +5,6 @@ import java.util.List;
 
 public interface CodeSnippetRepository extends CrudRepository<CodeSnippet, Long> {
     List<CodeSnippet> findTop10ByOrderByIdDesc();
-    CodeSnippet findById(long id);
+    CodeSnippet findByUUId(String uuid);
 
 }

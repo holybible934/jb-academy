@@ -5,8 +5,6 @@ import javax.persistence.Id;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -14,9 +12,9 @@ import java.time.format.DateTimeFormatter;
 public class CodeSnippet {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
     @JsonIgnore
-    private long id;
+    @Column(name = "uuid", columnDefinition = "TEXT", nullable = false)
+    private String id;
 
     @Column(name = "code", columnDefinition = "TEXT", nullable = false)
     private String code;
@@ -50,7 +48,7 @@ public class CodeSnippet {
         return code;
     }
 
-    public Long getId() {
+    public String getUUId() {
         return id;
     }
 

@@ -26,10 +26,10 @@ public class CodeSharingPlatform {
         SpringApplication.run(CodeSharingPlatform.class, args);
     }
 
-    @GetMapping(value = "/code/{id}")
-    public ModelAndView getHtml(HttpServletResponse response, @PathVariable long id) {
+    @GetMapping(value = "/code/{uuid}")
+    public ModelAndView getHtml(HttpServletResponse response, @PathVariable String uuid) {
         response.addHeader("Content-Type", "text/html");
-        CodeSnippet snippet = repository.findById(id);
+        CodeSnippet snippet = repository.findByUUId(uuid);
         String code = snippet.getCode();
         String date = snippet.getDate();
         ModelAndView model = new ModelAndView("codePage");
@@ -56,8 +56,7 @@ public class CodeSharingPlatform {
     @GetMapping(value = "/api/code/latest")
     public List<CodeSnippet> getCodesLatest(HttpServletResponse response) {
         response.addHeader("Content-Type", "application/json");
-        List<CodeSnippet> sortedCodeSnippets = repository.findTop10ByOrderByIdDesc();
-        return sortedCodeSnippets;
+        return repository.findTop10ByOrderByIdDesc();
     }
 
     @PostMapping(value = "/api/code/new")
@@ -65,16 +64,16 @@ public class CodeSharingPlatform {
         CodeSnippet snippet = new CodeSnippet();
         snippet.setCode(code.get("code").asText());
         snippet = repository.save(snippet);
-        ObjectNode node = new ObjectMapper().createObjectNode().put("id", String.valueOf(snippet.getId()));
+        ObjectNode node = new ObjectMapper().createObjectNode().put("id", snippet.getUUId());
         response.addHeader("Content-Type", "application/json");
 //        System.out.println("POST: Id is " + snippet.getId() + ", code is " + snippet.getCode());
         return node;
     }
 
-    @GetMapping(value = "/api/code/{id}")
-    public ObjectNode getCodeWithId(HttpServletResponse response, @PathVariable long id) {
+    @GetMapping(value = "/api/code/{uuid}")
+    public ObjectNode getCodeWithId(HttpServletResponse response, @PathVariable String uuid) {
         response.addHeader("Content-Type", "application/json");
-        CodeSnippet snippet = repository.findById(id);
+        CodeSnippet snippet = repository.findByUUId(uuid);
 //        System.out.println("GET: Id is " + id + ", code is " + codeSnippet.get(id - 1).getCode());
         ObjectNode node = new ObjectMapper().createObjectNode();
         node.put("code", snippet.getCode());
