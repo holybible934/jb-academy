@@ -15,8 +15,8 @@ Views restriction:<input id="views_restriction" type="text" th:text="${views}"> 
 <script>
 function send() {
     let object = {
-        "code": document.getElementById("code_snippet").value
-        "views": document.getElementById("views_restriction").value
+        "code": document.getElementById("code_snippet").value,
+        "views": document.getElementById("views_restriction").value,
         "time": document.getElementById("time_restriction").value
     };
 
