@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -23,28 +24,29 @@ public class CodeSnippet {
     private String code;
 
     @Column(name = "date", nullable = false)
-    private String date;
+    private Timestamp date;
 
-    @Column(name = "view_count")
-    private long viewCount;
+    @Column(name = "view_limit")
+    private long viewLimit;
 
-    @Column(name = "viewed_count")
-    private long viewedCount;
+    @Column(name = "been_viewed")
+    private long beenViewed;
 
     @Column(name = "time")
-    private String time;
+    private Timestamp time;
 
     public CodeSnippet() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        this.date = LocalDateTime.now().format(formatter);
+        //this.date = new Timestamp()LocalDateTime.now().format(formatter);
         this.UUId = UUID.randomUUID().toString();
+        this.date = Timestamp.valueOf(LocalDateTime.now());
     }
 
     public void setCode(String code) {
         this.code = code;
     }
 
-    public String getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
@@ -56,27 +58,27 @@ public class CodeSnippet {
         return UUId;
     }
 
-    public long getViewCount() {
-        return viewCount;
+    public long getViewLimit() {
+        return viewLimit;
     }
 
-    public void setViewCount(long viewCount) {
-        this.viewCount = viewCount;
+    public void setViewLimit(long viewLimit) {
+        this.viewLimit = viewLimit;
     }
 
-    public String getTime() {
+    public Timestamp getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(Timestamp time) {
         this.time = time;
     }
 
-    public long getViewedCount() {
-        return viewedCount;
+    public long getBeenViewed() {
+        return beenViewed;
     }
 
-    public void setViewedCount(long viewedCount) {
-        this.viewedCount = viewedCount;
+    public void setBeenViewed(long beenViewed) {
+        this.beenViewed = beenViewed;
     }
 }

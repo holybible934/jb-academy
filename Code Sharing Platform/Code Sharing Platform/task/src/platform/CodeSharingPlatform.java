@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @SpringBootApplication
@@ -31,7 +33,7 @@ public class CodeSharingPlatform {
         response.addHeader("Content-Type", "text/html");
         CodeSnippet snippet = repository.findByUUId(uuid);
         String code = snippet.getCode();
-        String date = snippet.getDate();
+        String date = snippet.getDate().toString();
         ModelAndView model = new ModelAndView("codePage");
         model.addObject("code", code);
         model.addObject("date", date);
@@ -63,8 +65,11 @@ public class CodeSharingPlatform {
     public ObjectNode postJson(HttpServletResponse response, @RequestBody ObjectNode code) {
         CodeSnippet snippet = new CodeSnippet();
         snippet.setCode(code.get("code").asText());
-        snippet.setViewCount(code.get("views").asLong());
-        snippet.setTime(code.get("time").asText());
+        snippet.setViewLimit(code.get("views").asLong(0));
+        long secondsDiff = code.get("time").asLong(0);
+        if (secondsDiff > 0) {
+            snippet.setTime(Timestamp.valueOf(LocalDateTime.now().plusSeconds(secondsDiff)));
+        }
         snippet = repository.save(snippet);
         ObjectNode node = new ObjectMapper().createObjectNode().put("id", snippet.getUUId());
         response.addHeader("Content-Type", "application/json");
@@ -79,7 +84,7 @@ public class CodeSharingPlatform {
 //        System.out.println("GET: Id is " + id + ", code is " + codeSnippet.get(id - 1).getCode());
         ObjectNode node = new ObjectMapper().createObjectNode();
         node.put("code", snippet.getCode());
-        node.put("date", snippet.getDate());
+        node.put("date", snippet.getDate().toLocalDateTime().toString());
         return node;
     }
 
