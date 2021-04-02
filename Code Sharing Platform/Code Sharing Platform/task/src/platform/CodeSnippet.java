@@ -1,20 +1,23 @@
 package platform;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import javax.persistence.Id;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import javax.persistence.*;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @Entity
 public class CodeSnippet {
 
     @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
     @JsonIgnore
+    private long id;
+
     @Column(name = "uuid", columnDefinition = "TEXT", nullable = false)
-    private String id;
+    private String UUId;
 
     @Column(name = "code", columnDefinition = "TEXT", nullable = false)
     private String code;
@@ -34,6 +37,7 @@ public class CodeSnippet {
     public CodeSnippet() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         this.date = LocalDateTime.now().format(formatter);
+        this.UUId = UUID.randomUUID().toString();
     }
 
     public void setCode(String code) {
@@ -49,7 +53,7 @@ public class CodeSnippet {
     }
 
     public String getUUId() {
-        return id;
+        return UUId;
     }
 
     public long getViewCount() {

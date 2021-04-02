@@ -63,6 +63,8 @@ public class CodeSharingPlatform {
     public ObjectNode postJson(HttpServletResponse response, @RequestBody ObjectNode code) {
         CodeSnippet snippet = new CodeSnippet();
         snippet.setCode(code.get("code").asText());
+        snippet.setViewCount(code.get("views").asLong());
+        snippet.setTime(code.get("time").asText());
         snippet = repository.save(snippet);
         ObjectNode node = new ObjectMapper().createObjectNode().put("id", snippet.getUUId());
         response.addHeader("Content-Type", "application/json");
