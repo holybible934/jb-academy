@@ -1,5 +1,6 @@
 package platform;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +33,19 @@ public class CodeSharingPlatform {
     public ModelAndView getHtml(HttpServletResponse response, @PathVariable String uuid) {
         response.addHeader("Content-Type", "text/html");
         CodeSnippet snippet = repository.findByUUId(uuid);
-        String code = snippet.getCode();
-        String date = snippet.getDate().toString();
-        ModelAndView model = new ModelAndView("codePage");
-        model.addObject("code", code);
-        model.addObject("date", date);
+        ModelAndView model;
+        if (snippet == null
+                || snippet.getBeenViewed() < snippet.getViewLimit()
+                || Timestamp.valueOf(LocalDateTime.now()).after(snippet.getTime())) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            model = new ModelAndView("notFoundPage");
+        } else {
+            model = new ModelAndView("codePage");
+            String code = snippet.getCode();
+            String date = snippet.getDate().toString();
+            model.addObject("code", code);
+            model.addObject("date", date);
+        }
         return model;
     }
 
@@ -67,11 +76,14 @@ public class CodeSharingPlatform {
         snippet.setCode(code.get("code").asText());
         snippet.setViewLimit(code.get("views").asLong(0));
         long secondsDiff = code.get("time").asLong(0);
-        if (secondsDiff > 0) {
+        if (secondsDiff == 0) {
+            snippet.setTime(Timestamp.valueOf(LocalDateTime.MAX));
+        } else {
             snippet.setTime(Timestamp.valueOf(LocalDateTime.now().plusSeconds(secondsDiff)));
         }
-        snippet = repository.save(snippet);
-        ObjectNode node = new ObjectMapper().createObjectNode().put("id", snippet.getUUId());
+        repository.save(snippet);
+        ObjectNode node = new ObjectMapper().configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true).createObjectNode();
+//        node.put("id", snippet.getUUId());
         response.addHeader("Content-Type", "application/json");
 //        System.out.println("POST: Id is " + snippet.getId() + ", code is " + snippet.getCode());
         return node;
@@ -81,10 +93,20 @@ public class CodeSharingPlatform {
     public ObjectNode getCodeWithId(HttpServletResponse response, @PathVariable String uuid) {
         response.addHeader("Content-Type", "application/json");
         CodeSnippet snippet = repository.findByUUId(uuid);
-//        System.out.println("GET: Id is " + id + ", code is " + codeSnippet.get(id - 1).getCode());
-        ObjectNode node = new ObjectMapper().createObjectNode();
-        node.put("code", snippet.getCode());
-        node.put("date", snippet.getDate().toLocalDateTime().toString());
+        ObjectNode node = new ObjectMapper().configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true).createObjectNode();
+        if (snippet == null
+                || snippet.getViewLimit() < snippet.getBeenViewed()
+                || Timestamp.valueOf(LocalDateTime.now()).after(snippet.getTime())) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        } else {
+//            System.out.println("GET: Id is " + id + ", code is " + codeSnippet.get(id - 1).getCode());
+            snippet.setBeenViewed(snippet.getBeenViewed() + 1);
+            snippet = repository.save(snippet);
+            node.put("code", snippet.getCode());
+            node.put("date", snippet.getDate().toLocalDateTime().toString());
+            node.put("time", snippet.getTime().toLocalDateTime().minusSeconds(LocalDateTime.now().getSecond()).getSecond());
+            node.put("views", snippet.getViewLimit() - snippet.getBeenViewed());
+        }
         return node;
     }
 
