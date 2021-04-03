@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @SpringBootApplication
 @RestController
@@ -37,21 +39,38 @@ public class CodeSharingPlatform {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             model = new ModelAndView("notFoundPage");
         } else {
+            snippet.setBeenViewed(snippet.getBeenViewed() + 1);
+            snippet = repository.save(snippet);
             model = new ModelAndView("codePage");
             String code = snippet.getCode();
-            String date = snippet.getDate().toString();
+            String date = snippet.getDate().toLocalDateTime().toString();
             model.addObject("code", code);
             model.addObject("date", date);
-            long diff = snippet.getTime().getTime() - Timestamp.valueOf(LocalDateTime.now()).getTime();
-            model.addObject("time", diff / 1000);
-            model.addObject("views", snippet.getViewLimit() - snippet.getBeenViewed());
+            if (snippet.getTime().toLocalDateTime().getYear() > 3000) {
+                model.addObject("time", "null");
+            } else {
+                long diff = snippet.getTime().getTime() - Timestamp.valueOf(LocalDateTime.now()).getTime();
+                model.addObject("time", diff / 1000);
+            }
+            if (snippet.getViewLimit() == Long.MAX_VALUE) {
+                model.addObject("views", "null");
+            } else {
+                model.addObject("views", snippet.getViewLimit() - snippet.getBeenViewed());
+            }
         }
         return model;
     }
 
     private boolean isRestricted(CodeSnippet snippet) {
-        return snippet.getViewLimit() < snippet.getBeenViewed()
-                || Timestamp.valueOf(LocalDateTime.now()).after(snippet.getTime());
+        boolean restrictedByViewsLimit = false;
+        boolean restrictedByTime = false;
+        if (snippet.getViewLimit() != Long.MAX_VALUE && snippet.getViewLimit() < snippet.getBeenViewed()) {
+            restrictedByViewsLimit = true;
+        }
+        if (Timestamp.valueOf(LocalDateTime.now()).after(snippet.getTime())) {
+            restrictedByTime = true;
+        }
+        return restrictedByTime || restrictedByViewsLimit;
     }
 
     @GetMapping(value = "/code/latest")
@@ -79,10 +98,13 @@ public class CodeSharingPlatform {
     public ObjectNode postJson(HttpServletResponse response, @RequestBody ObjectNode code) {
         CodeSnippet snippet = new CodeSnippet();
         snippet.setCode(code.get("code").asText());
-        snippet.setViewLimit(code.get("views").asLong(0));
+        snippet.setViewLimit(code.get("views").asLong(Long.MAX_VALUE));
+        if (snippet.getViewLimit() == 0) {
+            snippet.setViewLimit(Long.MAX_VALUE);
+        }
         long secondsDiff = code.get("time").asLong(0);
         if (secondsDiff == 0) {
-            snippet.setTime(Timestamp.valueOf(LocalDateTime.MAX));
+            snippet.setTime(Timestamp.valueOf(LocalDateTime.now().plusYears(1000)));
         } else {
             snippet.setTime(Timestamp.valueOf(LocalDateTime.now().plusSeconds(secondsDiff)));
         }
@@ -105,11 +127,20 @@ public class CodeSharingPlatform {
 //            System.out.println("GET: Id is " + id + ", code is " + codeSnippet.get(id - 1).getCode());
             snippet.setBeenViewed(snippet.getBeenViewed() + 1);
             snippet = repository.save(snippet);
-            node.put("code", snippet.getCode());
+            node.put("code", snippet.getCode())
             node.put("date", snippet.getDate().toLocalDateTime().toString());
-            long diff = snippet.getTime().getTime() - Timestamp.valueOf(LocalDateTime.now()).getTime();
-            node.put("time", diff / 1000);
-            node.put("views", snippet.getViewLimit() - snippet.getBeenViewed());
+            if (snippet.getTime().toLocalDateTime().getYear() > 3000) {
+                node.put("time", 0);
+            }
+            else {
+                int diff = (int) (snippet.getTime().getTime() - Timestamp.valueOf(LocalDateTime.now()).getTime()) / 1000;
+                node.put("time", diff);
+            }
+            if (snippet.getViewLimit() == Long.MAX_VALUE) {
+                node.put("views", 0);
+            } else {
+                node.put("views", snippet.getViewLimit() - snippet.getBeenViewed());
+            }
         }
         return node;
     }
