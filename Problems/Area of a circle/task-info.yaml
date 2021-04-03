@@ -3,24 +3,18 @@ files:
 - name: src/Main.java
   visible: true
   text: |-
-    import java.util.Scanner; // do not remove the import
+    import java.util.Scanner;
 
-    class Circle {
-        private double radius;
-
-        public Circle(double radius) {
-            this.radius = radius;
+    class Main {
+        public static void main(String[] args) {
+            Scanner scanner = new Scanner(System.in);
+            // put your code here
         }
     }
-
-    // do not change the interface
-    interface Measurable {
-        double area();
-    }
   learner_created: false
-feedback_link: https://hyperskill.org/learn/step/11362#comment
+feedback_link: https://hyperskill.org/learn/step/3796#comment
 status: Solved
 feedback:
   message: <html>Correct solution</html>
-  time: Mon, 25 Jan 2021 14:04:03 UTC
+  time: Sat, 03 Apr 2021 13:02:33 UTC
 record: -1

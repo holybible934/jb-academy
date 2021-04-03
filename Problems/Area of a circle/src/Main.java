@@ -1,19 +1,10 @@
-import java.util.Scanner; // do not remove the import
+import java.util.Scanner;
 
-class Circle implements Measurable {
-    private double radius;
-
-    public Circle(double radius) {
-        this.radius = radius;
+class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        // put your code here
+        double radius = scanner.nextDouble();
+        System.out.println(Math.PI * radius * radius);
     }
-
-    @Override
-    public double area() {
-        return Math.PI * this.radius * this.radius;
-    }
-}
-
-// do not change the interface
-interface Measurable {
-    double area();
 }
