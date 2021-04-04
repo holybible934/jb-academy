@@ -1,5 +1,102 @@
 type: edu
 files:
+- name: src/platform/CodeSharingPlatform.java
+  visible: true
+  text: |
+    package platform;
+
+    import com.fasterxml.jackson.databind.ObjectMapper;
+    import com.fasterxml.jackson.databind.node.ObjectNode;
+    import org.springframework.boot.SpringApplication;
+    import org.springframework.boot.autoconfigure.SpringBootApplication;
+    import org.springframework.web.bind.annotation.*;
+    import org.springframework.web.servlet.ModelAndView;
+
+    import javax.servlet.http.HttpServletResponse;
+    import java.util.ArrayList;
+    import java.util.Collections;
+    import java.util.Comparator;
+    import java.util.List;
+    import java.util.stream.Collectors;
+
+    @SpringBootApplication
+    @RestController
+    public class CodeSharingPlatform {
+
+        private final List<Code> codeSnippet = new ArrayList<>();
+
+        public static void main(String[] args) {
+            SpringApplication.run(CodeSharingPlatform.class, args);
+        }
+
+        @GetMapping(value = "/code/{id}")
+        public ModelAndView getHtml(HttpServletResponse response, @PathVariable int id) {
+            response.addHeader("Content-Type", "text/html");
+            String code = codeSnippet.get(id - 1).getCode();
+            String date = codeSnippet.get(id - 1).getDate();
+            ModelAndView model = new ModelAndView("codePage");
+            model.addObject("code", code);
+            model.addObject("date", date);
+            return model;
+        }
+
+        @GetMapping(value = "/code/latest")
+        public ModelAndView getLatestHtml(HttpServletResponse response) {
+            response.addHeader("Content-Type", "text/html");
+            ModelAndView model = new ModelAndView("latestCodesPage");
+            List<Code> sortedCodeSnippets = codeSnippet.stream()
+                    .sorted(Comparator.comparing(Code::getDate))
+                    .collect(Collectors.toList());
+            Collections.reverse(sortedCodeSnippets);
+            if (sortedCodeSnippets.size() < 10) {
+                model.addObject("snippets", sortedCodeSnippets);
+            } else {
+                model.addObject("snippets", sortedCodeSnippets.subList(0, 10));
+            }
+            return model;
+        }
+
+        @GetMapping(value = "/code/new")
+        public ModelAndView getNewCodeHtml(HttpServletResponse response) {
+            response.addHeader("Content-Type", "text/html");
+            return new ModelAndView("newCode");
+        }
+
+        @GetMapping(value = "/api/code/latest")
+        public List<Code> getCodesLatest(HttpServletResponse response) {
+            response.addHeader("Content-Type", "application/json");
+            List<Code> sortedCodeSnippets = codeSnippet.stream()
+                    .sorted(Comparator.comparing(Code::getDate))
+                    .collect(Collectors.toList());
+            Collections.reverse(sortedCodeSnippets);
+            if (sortedCodeSnippets.size() < 10) {
+                return sortedCodeSnippets;
+            }
+            return sortedCodeSnippets.subList(0, 10);
+        }
+
+        @PostMapping(value = "/api/code/new")
+        public ObjectNode postJson(HttpServletResponse response, @RequestBody ObjectNode code) {
+            Code newCode = new Code(code.get("code").asText());
+            codeSnippet.add(newCode);
+            ObjectNode node = new ObjectMapper().createObjectNode().put("id", String.valueOf(codeSnippet.lastIndexOf(newCode) + 1));
+            response.addHeader("Content-Type", "application/json");
+    //        System.out.println("POST: Id is " + (codeSnippet.lastIndexOf(newCode) + 1) + ", code is " + codeSnippet.get(codeSnippet.lastIndexOf(newCode)).getCode());
+            return node;
+        }
+
+        @GetMapping(value = "/api/code/{id}")
+        public ObjectNode getCodeWithId(HttpServletResponse response, @PathVariable int id) {
+            response.addHeader("Content-Type", "application/json");
+    //        System.out.println("GET: Id is " + id + ", code is " + codeSnippet.get(id - 1).getCode());
+            ObjectNode node = new ObjectMapper().createObjectNode();
+            node.put("code", codeSnippet.get(id - 1).getCode());
+            node.put("date", codeSnippet.get(id - 1).getDate());
+            return node;
+        }
+
+    }
+  learner_created: false
 - name: build.gradle
   visible: true
   text: |
@@ -22,69 +119,16 @@ files:
         implementation 'org.springframework.boot:spring-boot-starter'
         implementation 'org.springframework.boot:spring-boot-starter-actuator'
         compile("org.springframework.boot:spring-boot-starter-web")
+        implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     }
   learner_created: false
 - name: src/resources/application.properties
   visible: true
-  text: |
+  text: |-
     server.port=8889
     management.endpoints.web.exposure.include=*
     management.endpoint.shutdown.enabled=true
   learner_created: false
-- name: src/resources/templates/latestCodesPage.html
-  visible: true
-  text: |-
-    <!DOCTYPE html>
-    <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
-    <head>
-        <meta charset="UTF-8">
-        <title>Latest</title>
-    </head>
-    <body>
-    <span id="load_date" th:text="${date}"></span>
-    <pre id="code_snippet" th:text="${code}">
-    </pre>
-    </body>
-    </html>
-  learner_created: true
-- name: src/platform/CodeSnippet.java
-  visible: true
-  text: |-
-    package platform;
-
-    import java.time.LocalDateTime;
-    import java.time.format.DateTimeFormatter;
-
-    public class Code {
-
-        private String code;
-        private String date;
-
-        Code(String code) {
-            this.code = code;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-            this.date = LocalDateTime.now().format(formatter);
-        }
-
-        public String getDate() {
-            return date;
-        }
-
-        public String getCode() {
-            return code;
-        }
-
-        public void setCode(String code) {
-            this.code = code;
-        }
-    }
-  learner_created: true
-- name: src/platform/CodeSnippetRepository.java
-  visible: true
-  learner_created: true
-- name: src/platform/LoadDatabase.java
-  visible: true
-  learner_created: true
 - name: src/resources/templates/codePage.html
   visible: true
   text: |-
@@ -100,25 +144,56 @@ files:
     </pre>
     </body>
     </html>
-  learner_created: true
-- name: src/platform/CodeSharingPlatform.java
+  learner_created: false
+- name: src/resources/templates/newCode.html
   visible: true
-  text: |
-    package platform;
+  text: |-
+    <!DOCTYPE html>
+    <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="UTF-8">
+        <title>Create</title>
+    </head>
+    <body>
+    <textarea id="code_snippet" th:text="${codeBody}"></textarea>
+    <button id="send_snippet" type="submit" onclick="send()">Submit</button>.
+    <script>
+    function send() {
+        let object = {
+            "code": document.getElementById("code_snippet").value
+        };
 
-    import org.springframework.boot.SpringApplication;
-    import org.springframework.boot.autoconfigure.SpringBootApplication;
-    import org.springframework.web.bind.annotation.RestController;
+        let json = JSON.stringify(object);
 
-    @SpringBootApplication
-    @RestController
-    public class CodeSharingPlatform {
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", '/api/code/new', false)
+        xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        xhr.send(json);
 
-        public static void main(String[] args) {
-            SpringApplication.run(CodeSharingPlatform.class, args);
+        if (xhr.status == 200) {
+          alert("Success!");
         }
-
     }
+    </script>
+    </body>
+    </html>
+  learner_created: false
+- name: src/resources/templates/latestCodesPage.html
+  visible: true
+  text: |-
+    <!DOCTYPE html>
+    <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="UTF-8">
+        <title>Latest</title>
+    </head>
+    <body>
+    <div th:each="snippet : ${snippets}">
+        <span id="load_date" th:text="${snippet.date}"></span>
+        <pre id="code_snippet" th:text="${snippet.code}"></pre>
+    </div>
+    </body>
+    </html>
   learner_created: false
 - name: test/CodeSharingPlatformTest.java
   visible: false
@@ -537,45 +612,15 @@ files:
         }
     }
   learner_created: false
-- name: src/resources/templates/newCode.html
+- name: src/platform/LoadDatabase.java
   visible: true
-  text: |-
-    <!DOCTYPE html>
-    <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
-    <head>
-        <meta charset="UTF-8">
-        <title>Create</title>
-    </head>
-    <body>
-    <textarea id="code_snippet" th:text="${codeBody}"></textarea>
-    <button id="send_snippet" type="submit" onclick="send()">Submit</button>.
-    <script>
-    function send() {
-        let object = {
-            "code": document.getElementById("code_snippet").value
-        };
-
-        let json = JSON.stringify(object);
-
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", '/api/code/new', false)
-        xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-        xhr.send(json);
-
-        if (xhr.status == 200) {
-          alert("Success!");
-        }
-    }
-    </script>
-    </body>
-    </html>
   learner_created: true
-- name: snippets.mv.db
+- name: src/platform/CodeSnippetRepository.java
+  visible: true
+  learner_created: true
+- name: src/platform/CodeSnippet.java
   visible: true
   learner_created: true
 feedback_link: https://hyperskill.org/projects/130/stages/695/implement#comment
 status: Solved
-feedback:
-  message: Congratulations!
-  time: Sun, 28 Mar 2021 11:13:57 UTC
-record: -1
+record: 3

@@ -7,14 +7,38 @@ files:
 
     import org.springframework.boot.SpringApplication;
     import org.springframework.boot.autoconfigure.SpringBootApplication;
+    import org.springframework.web.bind.annotation.GetMapping;
     import org.springframework.web.bind.annotation.RestController;
+    import org.springframework.web.servlet.ModelAndView;
+
+    import javax.servlet.http.HttpServletResponse;
 
     @SpringBootApplication
     @RestController
     public class CodeSharingPlatform {
 
+        private Code code = new Code("System.out.println(\"Hello World\");");
+
         public static void main(String[] args) {
             SpringApplication.run(CodeSharingPlatform.class, args);
+        }
+
+        @GetMapping(value = "/code")
+        public ModelAndView getHtml(HttpServletResponse response) {
+            response.addHeader("Content-Type", "text/html");
+            String codeBody = code.getCode();
+
+            ModelAndView model = new ModelAndView("codePage");
+            model.addObject("codeBody", codeBody);
+            return model;
+
+        }
+
+        @GetMapping(value = "/api/code")
+        public Code getJson(HttpServletResponse response) {
+            response.addHeader("Content-Type", "application/json");
+
+            return code;
         }
 
     }
@@ -41,14 +65,51 @@ files:
         implementation 'org.springframework.boot:spring-boot-starter'
         implementation 'org.springframework.boot:spring-boot-starter-actuator'
         compile("org.springframework.boot:spring-boot-starter-web")
+        implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     }
   learner_created: false
 - name: src/resources/application.properties
   visible: true
-  text: |
+  text: |-
     server.port=8889
     management.endpoints.web.exposure.include=*
     management.endpoint.shutdown.enabled=true
+  learner_created: false
+- name: src/platform/Code.java
+  visible: true
+  text: |-
+    package platform;
+
+    public class Code {
+
+        private String code;
+
+        Code(String code) {
+            this.code = code;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
+  learner_created: false
+- name: src/resources/templates/codePage.html
+  visible: true
+  text: |-
+    <!DOCTYPE html>
+    <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="UTF-8">
+        <title>Code</title>
+    </head>
+    <body>
+    <pre><span th:text="${codeBody}">Default</span></pre>
+    </body>
+    </html>
   learner_created: false
 - name: test/CodeSharingPlatformTest.java
   visible: false
@@ -244,45 +305,6 @@ files:
         }
     }
   learner_created: false
-- name: src/resources/templates/codePage.html
-  visible: true
-  text: |-
-    <!DOCTYPE html>
-    <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
-    <head>
-        <meta charset="UTF-8">
-        <title>Code</title>
-    </head>
-    <body>
-    <pre><span th:text="${codeBody}">Default</span></pre>
-    </body>
-    </html>
-  learner_created: true
-- name: src/platform/Code.java
-  visible: true
-  text: |-
-    package platform;
-
-    public class Code {
-
-        private String code;
-
-        Code(String code) {
-            this.code = code;
-        }
-
-        public String getCode() {
-            return code;
-        }
-
-        public void setCode(String code) {
-            this.code = code;
-        }
-    }
-  learner_created: true
-- name: src/resources/templates/newCode.html
-  visible: true
-  learner_created: true
 feedback_link: https://hyperskill.org/projects/130/stages/693/implement#comment
 status: Solved
-record: 2
+record: 1

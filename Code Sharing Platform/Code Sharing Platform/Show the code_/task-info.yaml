@@ -157,15 +157,90 @@ files:
         }
     }
   learner_created: false
+- name: src/platform/CodeSnippetRepository.java
+  visible: true
+  learner_created: true
+- name: src/platform/CodeSnippet.java
+  visible: true
+  learner_created: true
+- name: src/platform/SnippetListEntity.java
+  visible: true
+  learner_created: true
+- name: src/platform/LoadDatabase.java
+  visible: true
+  learner_created: true
 - name: src/platform/Code.java
   visible: true
   learner_created: true
-- name: src/resources/templates/codePage.html
-  visible: true
-  learner_created: true
 feedback_link: https://hyperskill.org/projects/130/stages/692/implement#comment
-status: Solved
+status: Failed
 feedback:
-  message: Congratulations!
-  time: Sat, 27 Feb 2021 14:29:11 UTC
-record: 1
+  message: "Wrong answer in test #1\n\nGET /api/code should respond with status code\
+    \ 200, responded: 404\n\nResponse body:\n\n{&quot;timestamp&quot;:&quot;2021-04-04T07:47:23.295+00:00&quot;,&quot;status&quot;:404,&quot;error&quot;:&quot;Not\
+    \ Found&quot;,&quot;message&quot;:&quot;&quot;,&quot;path&quot;:&quot;/api/code&quot;}\n\
+    \nPlease find below the output of your program during this failed test.\n\n---\n\
+    \n\n  .   ____          _            __ _ _\n /\\\\ / ___&#39;_ __ _ _(_)_ __\
+    \  __ _ \\ \\ \\ \\\n( ( )\\___ | &#39;_ | &#39;_| | &#39;_ \\/ _` | \\ \\ \\\
+    \ \\\n \\\\/  ___)| |_)| | | | | || (_| |  ) ) ) )\n  &#39;  |____| .__|_| |_|_|\
+    \ |_\\__, | / / / /\n =========|_|==============|___/=/_/_/_/\n :: Spring Boot\
+    \ ::        (v2.3.3.RELEASE)\n\n2021-04-04 15:47:15.947  INFO 85054 --- [    Test\
+    \ worker] platform.CodeSharingPlatform             : Starting CodeSharingPlatform\
+    \ on CHANGCHUANdeMBP with PID 85054 (started by chchang in /Users/chchang/github/Code\
+    \ Sharing Platform/Code Sharing Platform/task)\n2021-04-04 15:47:15.950  INFO\
+    \ 85054 --- [    Test worker] platform.CodeSharingPlatform             : No active\
+    \ profile set, falling back to default profiles: default\n2021-04-04 15:47:17.215\
+    \  INFO 85054 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate :\
+    \ Bootstrapping Spring Data JPA repositories in DEFERRED mode.\n2021-04-04 15:47:17.289\
+    \  INFO 85054 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate :\
+    \ Finished Spring Data repository scanning in 58ms. Found 1 JPA repository interfaces.\n\
+    2021-04-04 15:47:18.018  INFO 85054 --- [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer\
+    \  : Tomcat initialized with port(s): 8889 (http)\n2021-04-04 15:47:18.032  INFO\
+    \ 85054 --- [    Test worker] o.apache.catalina.core.StandardService   : Starting\
+    \ service [Tomcat]\n2021-04-04 15:47:18.032  INFO 85054 --- [    Test worker]\
+    \ org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache\
+    \ Tomcat/9.0.37]\n2021-04-04 15:47:18.189  INFO 85054 --- [    Test worker] o.a.c.c.C.[Tomcat].[localhost].[/]\
+    \       : Initializing Spring embedded WebApplicationContext\n2021-04-04 15:47:18.190\
+    \  INFO 85054 --- [    Test worker] w.s.c.ServletWebServerApplicationContext :\
+    \ Root WebApplicationContext: initialization completed in 2163 ms\n2021-04-04\
+    \ 15:47:18.408  INFO 85054 --- [    Test worker] com.zaxxer.hikari.HikariDataSource\
+    \       : HikariPool-1 - Starting...\n2021-04-04 15:47:18.791  INFO 85054 ---\
+    \ [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 -\
+    \ Start completed.\n2021-04-04 15:47:18.803  INFO 85054 --- [    Test worker]\
+    \ o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at &#39;/h2-console&#39;.\
+    \ Database available at &#39;jdbc:h2:file:./snippets&#39;\n2021-04-04 15:47:19.173\
+    \  INFO 85054 --- [    Test worker] o.s.s.concurrent.ThreadPoolTaskExecutor  :\
+    \ Initializing ExecutorService &#39;applicationTaskExecutor&#39;\n2021-04-04 15:47:19.268\
+    \  INFO 85054 --- [         task-1] o.hibernate.jpa.internal.util.LogHelper  :\
+    \ HHH000204: Processing PersistenceUnitInfo [name: default]\n2021-04-04 15:47:19.345\
+    \  WARN 85054 --- [    Test worker] JpaBaseConfiguration$JpaWebConfiguration :\
+    \ spring.jpa.open-in-view is enabled by default. Therefore, database queries may\
+    \ be performed during view rendering. Explicitly configure spring.jpa.open-in-view\
+    \ to disable this warning\n2021-04-04 15:47:19.395  INFO 85054 --- [         task-1]\
+    \ org.hibernate.Version                    : HHH000412: Hibernate ORM core version\
+    \ 5.4.20.Final\n2021-04-04 15:47:19.946  INFO 85054 --- [         task-1] o.hibernate.annotations.common.Version\
+    \   : HCANN000001: Hibernate Commons Annotations {5.1.0.Final}\n2021-04-04 15:47:20.307\
+    \  INFO 85054 --- [         task-1] org.hibernate.dialect.Dialect            :\
+    \ HHH000400: Using dialect: org.hibernate.dialect.H2Dialect\n2021-04-04 15:47:21.790\
+    \  INFO 85054 --- [         task-1] o.h.e.t.j.p.i.JtaPlatformInitiator       :\
+    \ HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]\n\
+    2021-04-04 15:47:21.806  INFO 85054 --- [         task-1] j.LocalContainerEntityManagerFactoryBean\
+    \ : Initialized JPA EntityManagerFactory for persistence unit &#39;default&#39;\n\
+    2021-04-04 15:47:21.974  INFO 85054 --- [    Test worker] o.s.b.a.e.web.EndpointLinksResolver\
+    \      : Exposing 14 endpoint(s) beneath base path &#39;/actuator&#39;\n2021-04-04\
+    \ 15:47:22.071  INFO 85054 --- [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer\
+    \  : Tomcat started on port(s): 8889 (http) with context path &#39;&#39;\n2021-04-04\
+    \ 15:47:22.073  INFO 85054 --- [    Test worker] DeferredRepositoryInitializationListener\
+    \ : Triggering deferred initialization of Spring Data repositories…\n2021-04-04\
+    \ 15:47:22.577  INFO 85054 --- [    Test worker] DeferredRepositoryInitializationListener\
+    \ : Spring Data repositories initialized!\n2021-04-04 15:47:22.593  INFO 85054\
+    \ --- [    Test worker] platform.CodeSharingPlatform             : Started CodeSharingPlatform\
+    \ in 7.214 seconds (JVM running for 9.291)\n2021-04-04 15:47:22.683  INFO 85054\
+    \ --- [    Test worker] platform.LoadDatabase                    : Preloading\
+    \ \n2021-04-04 15:47:23.211  INFO 85054 --- [nio-8889-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]\
+    \       : Initializing Spring DispatcherServlet &#39;dispatcherServlet&#39;\n\
+    2021-04-04 15:47:23.212  INFO 85054 --- [nio-8889-exec-1] o.s.web.servlet.DispatcherServlet\
+    \        : Initializing Servlet &#39;dispatcherServlet&#39;\n2021-04-04 15:47:23.228\
+    \  INFO 85054 --- [nio-8889-exec-1] o.s.web.servlet.DispatcherServlet        :\
+    \ Completed initialization in 15 ms"
+  time: Sun, 04 Apr 2021 07:47:26 UTC
+record: 5
