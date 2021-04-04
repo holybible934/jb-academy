@@ -127,7 +127,7 @@ public class CodeSharingPlatform {
 //            System.out.println("GET: Id is " + id + ", code is " + codeSnippet.get(id - 1).getCode());
             snippet.setBeenViewed(snippet.getBeenViewed() + 1);
             snippet = repository.save(snippet);
-            node.put("code", snippet.getCode())
+            node.put("code", snippet.getCode());
             node.put("date", snippet.getDate().toLocalDateTime().toString());
             if (snippet.getTime().toLocalDateTime().getYear() > 3000) {
                 node.put("time", 0);
