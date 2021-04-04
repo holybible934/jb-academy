@@ -77,8 +77,14 @@ public class CodeSharingPlatform {
     public ModelAndView getLatestHtml(HttpServletResponse response) {
         response.addHeader("Content-Type", "text/html");
         ModelAndView model = new ModelAndView("latestCodesPage");
-        List<CodeSnippet> sortedCodeSnippets = repository.findTop10ByOrderByIdDesc();
-        model.addObject("snippets", sortedCodeSnippets);
+        List<CodeSnippet> noRestrictionsSnippets = filterRestrictedSnippets(repository.findAllByOrderByIdDesc());
+        List<SnippetListEntity> latestList = new ArrayList<>();
+        for (CodeSnippet cs : noRestrictionsSnippets) {
+            SnippetListEntity sle = new SnippetListEntity(cs.getCode(), cs.getDate().toLocalDateTime().toString(), 0, 0);
+            latestList.add(sle);
+        }
+        latestList = latestList.size() > 10 ? latestList.subList(0, 10) : latestList;
+        model.addObject("snippets", latestList);
         return model;
     }
 
@@ -97,7 +103,7 @@ public class CodeSharingPlatform {
             SnippetListEntity sle = new SnippetListEntity(cs.getCode(), cs.getDate().toLocalDateTime().toString(), 0, 0);
             latestList.add(sle);
         }
-        return latestList;
+        return latestList.size() > 10 ? latestList.subList(0, 10) : latestList;
     }
 
     private List<CodeSnippet> filterRestrictedSnippets(List<CodeSnippet> allSnippets) {
