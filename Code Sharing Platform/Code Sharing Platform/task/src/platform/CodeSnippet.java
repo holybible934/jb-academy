@@ -36,7 +36,6 @@ public class CodeSnippet {
     private Timestamp time;
 
     public CodeSnippet() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         this.UUId = UUID.randomUUID().toString();
         this.date = Timestamp.valueOf(LocalDateTime.now());
     }

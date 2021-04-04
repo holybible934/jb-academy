@@ -64,7 +64,7 @@ public class CodeSharingPlatform {
     private boolean isRestricted(CodeSnippet snippet) {
         boolean restrictedByViewsLimit = false;
         boolean restrictedByTime = false;
-        if (snippet.getViewLimit() != Long.MAX_VALUE && snippet.getViewLimit() < snippet.getBeenViewed()) {
+        if (snippet.getViewLimit() != Long.MAX_VALUE && snippet.getViewLimit() <= snippet.getBeenViewed()) {
             restrictedByViewsLimit = true;
         }
         if (Timestamp.valueOf(LocalDateTime.now()).after(snippet.getTime())) {
@@ -131,7 +131,6 @@ public class CodeSharingPlatform {
         ObjectNode node = new ObjectMapper().createObjectNode();
         node.put("id", snippet.getUUId());
         response.addHeader("Content-Type", "application/json");
-//        System.out.println("POST: Id is " + snippet.getId() + ", code is " + snippet.getCode());
         return node;
     }
 
@@ -143,7 +142,6 @@ public class CodeSharingPlatform {
         if (snippet == null || isRestricted(snippet)) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         } else {
-//            System.out.println("GET: Id is " + id + ", code is " + codeSnippet.get(id - 1).getCode());
             snippet.setBeenViewed(snippet.getBeenViewed() + 1);
             snippet = repository.save(snippet);
             node.put("code", snippet.getCode());
