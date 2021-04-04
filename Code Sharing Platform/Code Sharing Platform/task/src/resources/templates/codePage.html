@@ -11,12 +11,12 @@
 <body>
 <span id="load_date" th:text="${date}"></span>
 <br>
-<div th:if="${time!='null'}">
-    <span id="views_restriction" th:text="${time}"></span>
+<div th:if="${views!='null'}">
+    <span id="views_restriction" th:text="${views}"></span>
 </div>
 <br>
-<div th:if="${views!='null'}">
-    <span id="time_restriction" th:text="${views}"></span>
+<div th:if="${time!='null'}">
+    <span id="time_restriction" th:text="${time}"></span>
 </div>
 <br>
 <pre id="code_snippet"><code th:text="${code}"></code>
