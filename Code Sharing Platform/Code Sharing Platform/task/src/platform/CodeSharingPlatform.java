@@ -11,9 +11,9 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @SpringBootApplication
 @RestController
@@ -89,9 +89,22 @@ public class CodeSharingPlatform {
     }
 
     @GetMapping(value = "/api/code/latest")
-    public List<CodeSnippet> getCodesLatest(HttpServletResponse response) {
+    public List<SnippetListEntity> getCodesLatest(HttpServletResponse response) {
         response.addHeader("Content-Type", "application/json");
-        return repository.findTop10ByOrderByIdDesc();
+        List<CodeSnippet> noRestrictionsSnippets = filterRestrictedSnippets(repository.findAllByOrderByIdDesc());
+        List<SnippetListEntity> latestList = new ArrayList<>();
+        for (CodeSnippet cs : noRestrictionsSnippets) {
+            SnippetListEntity sle = new SnippetListEntity(cs.getCode(), cs.getDate().toLocalDateTime().toString(), 0, 0);
+            latestList.add(sle);
+        }
+        return latestList;
+    }
+
+    private List<CodeSnippet> filterRestrictedSnippets(List<CodeSnippet> allSnippets) {
+        return allSnippets.stream()
+                .filter(snippet -> snippet.getViewLimit() == Long.MAX_VALUE)
+                .filter(snippet -> snippet.getTime().toLocalDateTime().getYear() > 3000)
+                .collect(Collectors.toList());
     }
 
     @PostMapping(value = "/api/code/new")
@@ -133,8 +146,7 @@ public class CodeSharingPlatform {
                 node.put("time", 0);
             }
             else {
-                int diff = (int) (snippet.getTime().getTime() - Timestamp.valueOf(LocalDateTime.now()).getTime()) / 1000;
-                node.put("time", diff);
+                node.put("time", (snippet.getTime().getTime() - Timestamp.valueOf(LocalDateTime.now()).getTime()) / 1000L);
             }
             if (snippet.getViewLimit() == Long.MAX_VALUE) {
                 node.put("views", 0);
