@@ -14,6 +14,24 @@ public class Main {
             String[] input = scanner.nextLine().split(" ");
             matrixA[i] = Arrays.stream(input).mapToInt(Integer::parseInt).toArray();
         }
+//        doMaxtrixAddition(scanner, rowOfMatrixA, columnOfMatrixA, matrixA);
+        doMultiplyConstant(scanner, rowOfMatrixA, matrixA);
+    }
+
+    private static void doMultiplyConstant(Scanner scanner, int rowOfMatrixA, int[][] matrixA) {
+        int cons = scanner.nextInt();
+        for (int i = 0; i< rowOfMatrixA; i++) {
+            matrixA[i] = Arrays.stream(matrixA[i])
+                    .map(e -> e * cons)
+                    .toArray();
+        }
+        for (int i = 0; i< rowOfMatrixA; i++) {
+            Arrays.stream(matrixA[i]).forEach(e -> System.out.print(e + " "));
+            System.out.println();
+        }
+    }
+
+    private static void doMaxtrixAddition(Scanner scanner, int rowOfMatrixA, int columnOfMatrixA, int[][] matrixA) {
         int rowOfMatrixB = scanner.nextInt();
         int columnOfMatrixB = scanner.nextInt();
         scanner.nextLine();
