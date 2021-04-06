@@ -34,13 +34,44 @@ public class Main {
         }
     }
 
+    private static void doMultiplyByMatrices(Scanner scanner) {
+        System.out.print("Enter size of first matrix: ");
         int rowOfMatrixA = scanner.nextInt();
         int columnOfMatrixA = scanner.nextInt();
         scanner.nextLine();
-        int[][] matrixA = new int[rowOfMatrixA][columnOfMatrixA];
+        double[][] matrixA = new double[rowOfMatrixA][columnOfMatrixA];
+        System.out.println("Enter first matrix:");
         for (int i = 0; i< rowOfMatrixA; i++) {
             String[] input = scanner.nextLine().split(" ");
-            matrixA[i] = Arrays.stream(input).mapToInt(Integer::parseInt).toArray();
+            matrixA[i] = Arrays.stream(input).mapToDouble(Double::parseDouble).toArray();
+        }
+        System.out.print("Enter size of second matrix: ");
+        int rowOfMatrixB = scanner.nextInt();
+        int columnOfMatrixB = scanner.nextInt();
+        scanner.nextLine();
+        double[][] matrixB = new double[rowOfMatrixB][columnOfMatrixB];
+        System.out.println("Enter second matrix:");
+        for (int i = 0; i< rowOfMatrixB; i++) {
+            String[] input = scanner.nextLine().split(" ");
+            matrixB[i] = Arrays.stream(input).mapToDouble(Double::parseDouble).toArray();
+        }
+        if (columnOfMatrixA != rowOfMatrixB) {
+            System.out.println("The operation cannot be performed.");
+        } else {
+            double[][] resultMatrix = new double[rowOfMatrixA][columnOfMatrixB];
+            for (int i = 0; i< rowOfMatrixA; i++) {
+                Arrays.stream(resultMatrix[i]).forEach(e -> e = 0.0);
+            }
+            System.out.println("The result is:");
+            for (int i = 0; i < rowOfMatrixA; i++) {
+                for (int j = 0; j < columnOfMatrixB; j++) {
+                    for (int k = 0; k < columnOfMatrixA; k++) {
+                        resultMatrix[i][j] += matrixA[i][k] * matrixB[k][j];
+                    }
+                    System.out.print(resultMatrix[i][j] + " ");
+                }
+                System.out.println();
+            }
         }
     }
 
