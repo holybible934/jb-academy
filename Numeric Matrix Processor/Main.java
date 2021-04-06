@@ -19,6 +19,9 @@ public class Main {
                 case 3:
                     doMultiplyByMatrices(scanner);
                     break;
+                case 4:
+                    doMatrixTranspose(scanner);
+                    break;
                 default:
                     break;
             }
@@ -30,6 +33,82 @@ public class Main {
                 choice = -1;
             }
         }
+    }
+
+    private static void doMatrixTranspose(Scanner scanner) {
+        printTransposeMenu();
+        int choice;
+        try {
+            choice = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Wrong Input");
+            choice = -1;
+        }
+        switch (choice) {
+            case 1:
+                transposeMainDiag(scanner);
+                break;
+            case 2:
+                transposeSideDiag(scanner);
+                break;
+            case 3:
+                transposeVertical(scanner);
+                break;
+            case 4:
+                transposeHorizontal(scanner);
+                break;
+            default:
+                break;
+        }
+    }
+    private static void transposeSideDiag(Scanner scanner) {
+        System.out.print("Enter matrix size: ");
+        double[][] matrix = getMatrix(scanner);
+        System.out.println("Enter matrix:");
+        initializeMatrix(scanner, matrix);
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix.length - 1 - i; j++) {
+                double temp = matrix[i][j];
+                matrix[i][j] = matrix[matrix.length - 1 - j][matrix.length - 1 - i];
+                matrix[matrix.length - 1 - j][matrix.length - 1 - i] = temp;
+            }
+        }
+        System.out.println("The result is:");
+        for (double[] row : matrix) {
+            for (double v : row) {
+                System.out.print(v + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    private static void transposeMainDiag(Scanner scanner) {
+        System.out.print("Enter matrix size: ");
+        double[][] matrix = getMatrix(scanner);
+        System.out.println("Enter matrix:");
+        initializeMatrix(scanner, matrix);
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = i; j < matrix[0].length; j++) {
+                double temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+        System.out.println("The result is:");
+        for (double[] row : matrix) {
+            for (double v : row) {
+                System.out.print(v + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    private static void printTransposeMenu() {
+        System.out.print("1. Main diagonal\n" +
+                "2. Side diagonal\n" +
+                "3. Vertical line\n" +
+                "4. Horizontal line");
+        System.out.print("Your choice: ");
     }
 
     private static void doMultiplyByMatrices(Scanner scanner) {
