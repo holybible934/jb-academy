@@ -42,9 +42,35 @@ public class Main {
         double[][] matrix = getMatrix(scanner);
         System.out.println("Enter matrix:");
         initializeMatrix(scanner, matrix);
-        double[][] inverseMatrix = new double[matrix.length][matrix.length];
-        System.out.println("The result is:\n");
+        double[][] inverse = new double[matrix.length][matrix.length];
+
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; j < matrix[i].length; j++)
+                inverse[i][j] = Math.pow(-1, i + j)
+                        * determinant(minor(matrix, i, j));
+
+        // adjugate and determinant
+        double det = 1.0 / determinant(matrix);
+        for (int i = 0; i < inverse.length; i++) {
+            for (int j = 0; j <= i; j++) {
+                double temp = inverse[i][j];
+                inverse[i][j] = inverse[j][i] * det;
+                inverse[j][i] = temp * det;
+            }
+        }
+        printMatrix(inverse);
     }
+
+    private static double[][] minor(double[][] matrix, int row, int column) {
+        double[][] minor = new double[matrix.length - 1][matrix.length - 1];
+
+        for (int i = 0; i < matrix.length; i++)
+            for (int j = 0; i != row && j < matrix[i].length; j++)
+                if (j != column)
+                    minor[i < row ? i : i - 1][j < column ? j : j - 1] = matrix[i][j];
+        return minor;
+    }
+
 
     private static int getChoice(Scanner scanner) {
         int choice;
@@ -75,7 +101,7 @@ public class Main {
             if (matrix[0][i] == 0) {
                 continue;
             }
-            determinant = determinant + (i % 2 == 0 ? matrix[0][i] : -matrix[0][i]) * determinant(createSubMatrix(matrix, i));
+            determinant += Math.pow(-1, i) * matrix[0][i] * determinant(createSubMatrix(matrix, i));
         }
         return determinant;
     }
