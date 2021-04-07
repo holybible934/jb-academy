@@ -8,6 +8,8 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         printMenu();
         int choice = Integer.parseInt(scanner.nextLine());
+        int choice;
+        choice = getChoice(scanner);
         while (choice != 0) {
             switch (choice) {
                 case 1:
@@ -26,17 +28,11 @@ public class Main {
                     break;
             }
             printMenu();
-            try {
-                choice = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("Wrong Input");
-                choice = -1;
-            }
+            choice = getChoice(scanner);
         }
     }
 
-    private static void doMatrixTranspose(Scanner scanner) {
-        printTransposeMenu();
+    private static int getChoice(Scanner scanner) {
         int choice;
         try {
             choice = Integer.parseInt(scanner.nextLine());
@@ -44,6 +40,12 @@ public class Main {
             System.out.println("Wrong Input");
             choice = -1;
         }
+        return choice;
+    }
+    private static void doMatrixTranspose(Scanner scanner) {
+        printTransposeMenu();
+        int choice;
+        choice = getChoice(scanner);
         switch (choice) {
             case 1:
                 transposeMainDiag(scanner);
@@ -61,6 +63,37 @@ public class Main {
                 break;
         }
     }
+
+    private static void transposeHorizontal(Scanner scanner) {
+        System.out.print("Enter matrix size: ");
+        double[][] matrix = getMatrix(scanner);
+        System.out.println("Enter matrix:");
+        initializeMatrix(scanner, matrix);
+        for (int i = 0; i < matrix.length / 2; i++) {
+            for (int j = 0; j < matrix.length; j++) {
+                double temp = matrix[i][j];
+                matrix[i][j] = matrix[matrix.length - 1 - i][j];
+                matrix[matrix.length - 1 - i][j] = temp;
+            }
+        }
+        printMatrix(matrix);
+    }
+
+    private static void transposeVertical(Scanner scanner) {
+        System.out.print("Enter matrix size: ");
+        double[][] matrix = getMatrix(scanner);
+        System.out.println("Enter matrix:");
+        initializeMatrix(scanner, matrix);
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix.length / 2; j++) {
+                double temp = matrix[i][j];
+                matrix[i][j] = matrix[i][matrix.length - 1 - j];
+                matrix[i][matrix.length - 1 - j] = temp;
+            }
+        }
+        printMatrix(matrix);
+    }
+
     private static void transposeSideDiag(Scanner scanner) {
         System.out.print("Enter matrix size: ");
         double[][] matrix = getMatrix(scanner);
@@ -73,6 +106,10 @@ public class Main {
                 matrix[matrix.length - 1 - j][matrix.length - 1 - i] = temp;
             }
         }
+        printMatrix(matrix);
+    }
+
+    private static void printMatrix(double[][] matrix) {
         System.out.println("The result is:");
         for (double[] row : matrix) {
             for (double v : row) {
@@ -94,13 +131,7 @@ public class Main {
                 matrix[j][i] = temp;
             }
         }
-        System.out.println("The result is:");
-        for (double[] row : matrix) {
-            for (double v : row) {
-                System.out.print(v + " ");
-            }
-            System.out.println();
-        }
+        printMatrix(matrix);
     }
 
     private static void printTransposeMenu() {
