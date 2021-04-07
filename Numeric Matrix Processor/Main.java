@@ -50,15 +50,44 @@ public class Main {
         double[][] matrix = getMatrix(scanner);
         System.out.println("Enter matrix:");
         initializeMatrix(scanner, matrix);
-        double[] withPlusSign = Arrays.stream(new double[matrix.length]).map(e -> e = 1.0).toArray();
-        double[] withMinusSign = Arrays.stream(new double[matrix.length]).map(e -> e = 1.0).toArray();
-        for (int gap = 0; gap < matrix.length; gap++) {
-            for (int base = 0; base < matrix.length; base++) {
-                withPlusSign[gap] *= matrix[base][(base + gap) % matrix.length];
-                withMinusSign[gap] *= matrix[(matrix.length - base) % matrix.length][(base + gap) % matrix.length];
-            }
+        System.out.println("The result is:\n" + determinant(matrix));
+    }
+
+    public static double determinant(double[][] matrix) {
+        double determinant = 0;
+        if (matrix.length == 2) {
+            return crossMultiply(matrix);
         }
-        System.out.println("The result is:\n" + (Arrays.stream(withPlusSign).sum() - Arrays.stream(withMinusSign).sum()));
+
+        for (int i = 0; i < matrix[0].length; i++) {
+            if (matrix[0][i] == 0) {
+                continue;
+            }
+            determinant = determinant + (i % 2 == 0 ? matrix[0][i] : -matrix[0][i]) * determinant(createSubMatrix(matrix, i));
+        }
+        return determinant;
+    }
+
+    public static double crossMultiply(double[][] matrix) {
+        return matrix[0][0] * matrix[1][1] - matrix[1][0] * matrix[0][1];
+    }
+
+    public static double[][] createSubMatrix(double[][] matrix, int col) {
+        double[][] subMatrix = new double[matrix.length - 1][matrix.length - 1];
+        int rowIndex = 0;
+        for (int i = 1; i < matrix.length; i++) {
+            int colIndex = 0;
+            for (int k = 0; k < matrix[0].length; k++) {
+                if (k == col) {
+                    continue;
+                }
+                subMatrix[rowIndex][colIndex] = matrix[i][k];
+                colIndex++;
+            }
+            rowIndex++;
+
+        }
+        return subMatrix;
     }
 
     private static void doMatrixTranspose(Scanner scanner) {
