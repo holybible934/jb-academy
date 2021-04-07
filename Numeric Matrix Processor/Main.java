@@ -7,7 +7,6 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         printMenu();
-        int choice = Integer.parseInt(scanner.nextLine());
         int choice;
         choice = getChoice(scanner);
         while (choice != 0) {
