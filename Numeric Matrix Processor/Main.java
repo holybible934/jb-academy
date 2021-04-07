@@ -26,12 +26,24 @@ public class Main {
                 case 5:
                     doMatrixDeterminant(scanner);
                     break;
+                case 6:
+                    doInverseMatrix(scanner);
+                    break;
                 default:
                     break;
             }
             printMenu();
             choice = getChoice(scanner);
         }
+    }
+
+    private static void doInverseMatrix(Scanner scanner) {
+        System.out.print("Enter matrix size: ");
+        double[][] matrix = getMatrix(scanner);
+        System.out.println("Enter matrix:");
+        initializeMatrix(scanner, matrix);
+        double[][] inverseMatrix = new double[matrix.length][matrix.length];
+        System.out.println("The result is:\n");
     }
 
     private static int getChoice(Scanner scanner) {
@@ -232,6 +244,7 @@ public class Main {
                 "3. Multiply matrices\n" +
                 "4. Transpose matrix\n" +
                 "5. Calculate a determinant\n" +
+                "6. Inverse matrix\n" +
                 "0. Exit");
         System.out.print("Your choice: ");
     }
