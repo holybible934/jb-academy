@@ -23,6 +23,9 @@ public class Main {
                 case 4:
                     doMatrixTranspose(scanner);
                     break;
+                case 5:
+                    doMatrixDeterminant(scanner);
+                    break;
                 default:
                     break;
             }
@@ -41,6 +44,23 @@ public class Main {
         }
         return choice;
     }
+
+    private static void doMatrixDeterminant(Scanner scanner) {
+        System.out.print("Enter matrix size: ");
+        double[][] matrix = getMatrix(scanner);
+        System.out.println("Enter matrix:");
+        initializeMatrix(scanner, matrix);
+        double[] withPlusSign = Arrays.stream(new double[matrix.length]).map(e -> e = 1.0).toArray();
+        double[] withMinusSign = Arrays.stream(new double[matrix.length]).map(e -> e = 1.0).toArray();
+        for (int gap = 0; gap < matrix.length; gap++) {
+            for (int base = 0; base < matrix.length; base++) {
+                withPlusSign[gap] *= matrix[base][(base + gap) % matrix.length];
+                withMinusSign[gap] *= matrix[(matrix.length - base) % matrix.length][(base + gap) % matrix.length];
+            }
+        }
+        System.out.println("The result is:\n" + (Arrays.stream(withPlusSign).sum() - Arrays.stream(withMinusSign).sum()));
+    }
+
     private static void doMatrixTranspose(Scanner scanner) {
         printTransposeMenu();
         int choice;
@@ -182,6 +202,7 @@ public class Main {
                 "2. Multiply matrix by a constant\n" +
                 "3. Multiply matrices\n" +
                 "4. Transpose matrix\n" +
+                "5. Calculate a determinant\n" +
                 "0. Exit");
         System.out.print("Your choice: ");
     }
