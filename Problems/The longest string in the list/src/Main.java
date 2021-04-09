@@ -23,11 +23,9 @@ public class Main {
     }
 }
 
-class SortbyLength implements Comparator<String>
-{
+class SortbyLength implements Comparator<String> {
     // Used for sorting in descending order by string length
-    public int compare(String a, String b)
-    {
+    public int compare(String a, String b) {
         return b.length() - a.length();
     }
 }
