@@ -11,12 +11,10 @@ public class Main {
      */
     public static int maxAbsValue(String[] numbers) {
         // write your code here
-        int asInt = Arrays.stream(numbers).mapToInt(Integer::parseInt)
+        return Arrays.stream(numbers).mapToInt(Integer::parseInt)
                 .map(Math::abs)
-                .sorted()
-                .max().getAsInt();
-        return asInt;
-
+                .max()
+                .orElse(0);
     }
 
     // Don't change the code below
