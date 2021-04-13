@@ -16,7 +16,7 @@ public class Main {
      */
     public static int sum(int a, int b, int n, int m) {
         // write your code here
-        return IntStream.range(a, b + 1)
+        return IntStream.rangeClosed(a, b)
                 .filter(num -> num % n == 0 || num % m == 0)
                 .reduce(0, Integer::sum);
     }
