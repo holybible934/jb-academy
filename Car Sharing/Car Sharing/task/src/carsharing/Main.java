@@ -50,6 +50,24 @@ public class Main {
         exit();
     }
 
+    private static void printCompanyList() {
+        try {
+            stmt = conn.createStatement();
+            String sql = "SELECT * FROM COMPANY;";
+            ResultSet companies = stmt.executeQuery(sql);
+            if (!companies.isBeforeFirst()) {
+                System.out.println("The company list is empty!");
+            } else {
+                System.out.println("\nCompany list:");
+                while (companies.next()) {
+                    System.out.println(companies.getInt("ID") + ". " + companies.getString("NAME"));
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
     private static void createNewCompany(String newCompanyName) {
         try {
             stmt = conn.createStatement();
