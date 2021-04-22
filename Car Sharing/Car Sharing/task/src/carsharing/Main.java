@@ -88,12 +88,17 @@ public class Main {
 
     private static void createCompanyTable() throws SQLException {
         // STEP 3: Execute a query
-        System.out.println("Creating table in given database...");
-        stmt = conn.createStatement();
-        String sql = "CREATE TABLE COMPANY " +
-                "(ID INTEGER PRIMARY KEY AUTO_INCREMENT " +
-                "NAME VARCHAR(255)) NOT NULL UNIQUE";
-        stmt.executeUpdate(sql);
+        ResultSet resultSet = conn.getMetaData().getTables(null, null, "COMPANY", null);
+        if (!resultSet.next()) {
+            System.out.println("Creating table in given database...");
+            stmt = conn.createStatement();
+            String sql = "CREATE TABLE COMPANY " +
+                    "(ID INTEGER PRIMARY KEY AUTO_INCREMENT," +
+                    "NAME VARCHAR(255) NOT NULL UNIQUE);";
+            stmt.executeUpdate(sql);
+        } else {
+            System.out.println("Table COMPANY already exists.");
+        }
     }
 
     private static void connectToDb(String[] args) throws ClassNotFoundException, SQLException {
