@@ -1,9 +1,6 @@
 package carsharing;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Scanner;
 
 public class Main {
@@ -15,8 +12,8 @@ public class Main {
     static Statement stmt;
 
     //  Database credentials
-    static final String USER = "sa";
-    static final String PASS = "";
+//    static final String USER = "sa";
+//    static final String PASS = "";
 
     public static void main(String[] args) {
         try{
@@ -32,12 +29,14 @@ public class Main {
         printMainMenu();
         int mainOpt = Integer.parseInt(scanner.nextLine());
         while (mainOpt > 0) {
-            int compantOpt = Integer.parseInt(scanner.nextLine());
             printCompanyMenu();
-            switch (compantOpt) {
+            int companyOpt = Integer.parseInt(scanner.nextLine());
+            switch (companyOpt) {
                 case 1:
+                    printCompanyList();
                     break;
                 case 2:
+                    System.out.println("Enter the company name:");
                     String newCompanyName = scanner.nextLine();
                     createNewCompany(newCompanyName);
                     break;
@@ -54,11 +53,11 @@ public class Main {
     private static void createNewCompany(String newCompanyName) {
         try {
             stmt = conn.createStatement();
-            String sql = "INSERT TABLE COMPANY " +
-                    "VALUES(" + newCompanyName + ");";
+            String sql = "INSERT INTO COMPANY " +
+                    "(NAME) VALUES ('" + newCompanyName + "');";
             int rowCount = stmt.executeUpdate(sql);
             if (rowCount > 0) {
-                System.out.println("The company was created!");
+                System.out.println("The company was created!\n");
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -78,9 +77,11 @@ public class Main {
 
     private static void exit() {
         try {
-            stmt.close();
+            if (stmt != null) {
+                stmt.close();
+            }
             conn.close();
-        } catch (SQLException ex) {
+        } catch (SQLException | NullPointerException ex) {
             ex.printStackTrace();
         }
     }
@@ -100,7 +101,7 @@ public class Main {
         Class.forName(JDBC_DRIVER);
 
         // STEP 2: Open a connection
-        if ("-databaseFileName".equals(args[0])) {
+        if (args.length > 0 && "-databaseFileName".equals(args[0])) {
             conn = DriverManager.getConnection(DB_URL + args[1]);
         } else {
             conn = DriverManager.getConnection(DB_URL + "testdb");
