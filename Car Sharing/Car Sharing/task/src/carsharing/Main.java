@@ -10,6 +10,7 @@ public class Main {
     static final String DB_URL = "jdbc:h2:./src/carsharing/db/";
     static Connection conn;
     static Statement stmt;
+    static Scanner scanner;
 
     //  Database credentials
 //    static final String USER = "sa";
@@ -25,7 +26,7 @@ public class Main {
             se.printStackTrace();
             return;
         }
-        Scanner scanner = new Scanner(System.in);
+        scanner = new Scanner(System.in);
         printMainMenu();
         int mainOpt = Integer.parseInt(scanner.nextLine());
         while (mainOpt > 0) {
@@ -58,10 +59,12 @@ public class Main {
             if (!companies.isBeforeFirst()) {
                 System.out.println("The company list is empty!");
             } else {
-                System.out.println("\nCompany list:");
+                System.out.println("\nChoose a company:");
                 while (companies.next()) {
                     System.out.println(companies.getInt("ID") + ". " + companies.getString("NAME"));
                 }
+                System.out.println("0. Back");
+                // TODO: Add Car manipulation
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
