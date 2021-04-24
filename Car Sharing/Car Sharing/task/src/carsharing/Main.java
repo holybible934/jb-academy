@@ -108,11 +108,12 @@ public class Main {
         // STEP 3: Execute a query
         ResultSet resultSet = conn.getMetaData().getTables(null, null, "COMPANY", null);
         if (!resultSet.next()) {
-            System.out.println("Creating table in given database...");
+            System.out.println("Creating COMPANY table in given database...");
             stmt = conn.createStatement();
-            String sql = "CREATE TABLE COMPANY " +
-                    "(ID INTEGER PRIMARY KEY AUTO_INCREMENT," +
-                    "NAME VARCHAR(255) NOT NULL UNIQUE);";
+            String sql = "CREATE TABLE COMPANY (" +
+                    "ID INTEGER PRIMARY KEY AUTO_INCREMENT," +
+                    "NAME VARCHAR(255) NOT NULL UNIQUE" +
+                    ");";
             stmt.executeUpdate(sql);
         } else {
             System.out.println("Table COMPANY already exists.");
