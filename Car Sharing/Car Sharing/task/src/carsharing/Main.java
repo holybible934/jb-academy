@@ -133,5 +133,23 @@ public class Main {
         conn.setAutoCommit(true);
 //        System.out.println("Connected database successfully...");
         createCompanyTable();
+        createCarTable();
+    }
+
+    private static void createCarTable() throws SQLException {
+        ResultSet resultSet = conn.getMetaData().getTables(null, null, "CAR", null);
+        if (!resultSet.next()) {
+            System.out.println("Creating CAR table in given database...");
+            stmt = conn.createStatement();
+            String sql = "CREATE TABLE COMPANY (" +
+                    "ID INTEGER PRIMARY KEY AUTO_INCREMENT," +
+                    "NAME VARCHAR(255) NOT NULL UNIQUE" +
+                    "COMPANY_ID INTEGER NOT NULL" +
+                    "ADD CONSTRAINT FK_COMPANY_ID FOREIGN KEY (COMPANY_ID) REFERENCES COMPANY(ID)" +
+                    ");";
+            stmt.executeUpdate(sql);
+        } else {
+            System.out.println("Table CAR already exists.");
+        }
     }
 }
