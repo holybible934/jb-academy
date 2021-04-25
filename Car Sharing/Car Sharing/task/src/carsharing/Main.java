@@ -20,7 +20,7 @@ public class Main {
 //    static final String PASS = "";
 
     public static void main(String[] args) {
-        try{
+        try {
             if (conn == null) {
                 connectToDb(args);
             }
@@ -33,23 +33,29 @@ public class Main {
         printMainMenu();
         int mainOpt = Integer.parseInt(scanner.nextLine());
         while (mainOpt > 0) {
-            printCompanyMenu();
-            int companyOpt = Integer.parseInt(scanner.nextLine());
-            switch (companyOpt) {
-                case 1:
-                    printCompanyList();
-                    break;
-                case 2:
-                    System.out.println("Enter the company name:");
-                    String newCompanyName = scanner.nextLine();
-                    createNewCompany(newCompanyName);
-                    break;
-                case 0:
-                default:
-                    printMainMenu();
-                    mainOpt = Integer.parseInt(scanner.nextLine());
-                    break;
+            if (mainOpt == 1) {
+                printCompanyMenu();
+                int companyOpt = Integer.parseInt(scanner.nextLine());
+                switch (companyOpt) {
+                    case 1:
+                        printCompanyList();
+                        break;
+                    case 2:
+                        System.out.println("Enter the company name:");
+                        String newCompanyName = scanner.nextLine();
+                        createNewCompany(newCompanyName);
+                        break;
+                    case 0:
+                    default:
+                        break;
+                }
+            } else if (mainOpt == 2){
+                // TODO: Login as a customer
+            } else {
+                // TODO: Create a customer
             }
+            printMainMenu();
+            mainOpt = Integer.parseInt(scanner.nextLine());
         }
         exit();
     }
@@ -158,6 +164,8 @@ public class Main {
 
     private static void printMainMenu() {
         System.out.println("1. Log in as a manager\n" +
+                "2. Log in as a customer\n" +
+                "3. Create a customer\n" +
                 "0. Exit");
     }
 
