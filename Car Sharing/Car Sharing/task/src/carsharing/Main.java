@@ -1,6 +1,7 @@
 package carsharing;
 
 import java.sql.*;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Main {
@@ -53,6 +54,7 @@ public class Main {
 
     private static void printCompanyList() {
         try {
+            HashMap<Integer, String> companyMap = new HashMap<>();
             stmt = conn.createStatement();
             String sql = "SELECT * FROM COMPANY;";
             ResultSet companies = stmt.executeQuery(sql);
@@ -60,14 +62,40 @@ public class Main {
                 System.out.println("The company list is empty!");
             } else {
                 System.out.println("\nChoose a company:");
+                int id = 0;
                 while (companies.next()) {
-                    System.out.println(companies.getInt("ID") + ". " + companies.getString("NAME"));
+                    id = companies.getInt("ID");
+                    String companyName = companies.getString("NAME");
+                    System.out.println(id + ". " + companyName);
+                    companyMap.put(id, companyName);
                 }
                 System.out.println("0. Back");
-                // TODO: Add Car manipulation
+                int option = Integer.parseInt(scanner.nextLine());
+                if (option != 0) {
+                    companyCarAction(id, companyMap.get(id));
+                }
             }
-        } catch (SQLException throwables) {
+        } catch (SQLException | NumberFormatException throwables) {
             throwables.printStackTrace();
+        }
+    }
+
+    private static void companyCarAction(int companyId, String companyName) {
+        printCarsMenu(companyName);
+        int carsOpt = Integer.parseInt(scanner.nextLine());
+        while (carsOpt >= 0) {
+            switch (carsOpt) {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 0:
+                    return;
+                default:
+                    printCarsMenu(companyName);
+                    carsOpt = Integer.parseInt(scanner.nextLine());
+                    break;
+            }
         }
     }
 
@@ -85,15 +113,22 @@ public class Main {
         }
     }
 
+    private static void printMainMenu() {
+        System.out.println("1. Log in as a manager\n" +
+                "0. Exit");
+    }
+
     private static void printCompanyMenu() {
         System.out.println("1. Company list\n" +
                 "2. Create a company\n" +
                 "0. Back");
     }
 
-    private static void printMainMenu() {
-        System.out.println("1. Log in as a manager\n" +
-                "0. Exit");
+    private static void printCarsMenu(String companyName) {
+        System.out.println("'" + companyName + "' company\n" +
+                "1. Car list\n" +
+                "2. Create a car\n" +
+                "0. Back");
     }
 
     private static void exit() {
