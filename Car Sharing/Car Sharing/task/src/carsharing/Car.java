@@ -5,7 +5,7 @@ public class Car {
     private int company_id;
     private String name;
 
-    public Car(int id, int company_id, String name) {
+    public Car(int id, String name, int company_id) {
         this.id = id;
         this.company_id = company_id;
         this.name = name;
