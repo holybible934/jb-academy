@@ -1,7 +1,8 @@
 package carsharing;
 
 import java.sql.*;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -54,7 +55,7 @@ public class Main {
 
     private static void printCompanyList() {
         try {
-            HashMap<Integer, String> companyMap = new HashMap<>();
+            List<String> companyList = new ArrayList<>();
             stmt = conn.createStatement();
             String sql = "SELECT * FROM COMPANY;";
             ResultSet companies = stmt.executeQuery(sql);
@@ -64,15 +65,14 @@ public class Main {
                 System.out.println("\nChoose a company:");
                 int id = 0;
                 while (companies.next()) {
-                    id = companies.getInt("ID");
                     String companyName = companies.getString("NAME");
-                    System.out.println(id + ". " + companyName);
-                    companyMap.put(id, companyName);
+                    companyList.add(companyName);
+                    System.out.println(companyList.indexOf(companyName) + ". " + companyName);
                 }
                 System.out.println("0. Back");
-                int option = Integer.parseInt(scanner.nextLine());
-                if (option != 0) {
-                    companyCarAction(id, companyMap.get(id - 1));
+                int chosenCompanyIndex = Integer.parseInt(scanner.nextLine());
+                if (chosenCompanyIndex != 0) {
+                    companyCarAction(companyList.get(chosenCompanyIndex));
                 }
             }
         } catch (SQLException | NumberFormatException throwables) {
@@ -80,7 +80,7 @@ public class Main {
         }
     }
 
-    private static void companyCarAction(int companyId, String companyName) {
+    private static void companyCarAction(String companyName) {
         printCarsMenu(companyName);
         int carsOpt = Integer.parseInt(scanner.nextLine());
         while (carsOpt >= 0) {
