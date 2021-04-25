@@ -96,6 +96,10 @@ public class Main {
                     carsOpt = Integer.parseInt(scanner.nextLine());
                     break;
             }
+            printCarsMenu(companyName);
+            carsOpt = Integer.parseInt(scanner.nextLine());
+        }
+    }
         }
     }
 
@@ -158,6 +162,23 @@ public class Main {
         }
     }
 
+    private static void createCarTable() throws SQLException {
+        ResultSet resultSet = conn.getMetaData().getTables(null, null, "CAR", null);
+        if (!resultSet.next()) {
+            System.out.println("Creating CAR table in given database...");
+            stmt = conn.createStatement();
+            String sql = "CREATE TABLE CAR (" +
+                    "ID INTEGER PRIMARY KEY AUTO_INCREMENT," +
+                    "NAME VARCHAR(255) NOT NULL UNIQUE" +
+                    "COMPANY_ID INTEGER NOT NULL" +
+                    "ADD CONSTRAINT FK_COMPANY_ID FOREIGN KEY (COMPANY_ID) REFERENCES COMPANY(ID)" +
+                    ");";
+            stmt.executeUpdate(sql);
+        } else {
+            System.out.println("Table CAR already exists.");
+        }
+    }
+
     private static void connectToDb(String[] args) throws ClassNotFoundException, SQLException {
         // STEP 1: Register JDBC driver
         Class.forName(JDBC_DRIVER);
@@ -172,22 +193,5 @@ public class Main {
 //        System.out.println("Connected database successfully...");
         createCompanyTable();
         createCarTable();
-    }
-
-    private static void createCarTable() throws SQLException {
-        ResultSet resultSet = conn.getMetaData().getTables(null, null, "CAR", null);
-        if (!resultSet.next()) {
-            System.out.println("Creating CAR table in given database...");
-            stmt = conn.createStatement();
-            String sql = "CREATE TABLE COMPANY (" +
-                    "ID INTEGER PRIMARY KEY AUTO_INCREMENT," +
-                    "NAME VARCHAR(255) NOT NULL UNIQUE" +
-                    "COMPANY_ID INTEGER NOT NULL" +
-                    "ADD CONSTRAINT FK_COMPANY_ID FOREIGN KEY (COMPANY_ID) REFERENCES COMPANY(ID)" +
-                    ");";
-            stmt.executeUpdate(sql);
-        } else {
-            System.out.println("Table CAR already exists.");
-        }
     }
 }
