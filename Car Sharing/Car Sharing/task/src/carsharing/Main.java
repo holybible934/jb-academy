@@ -131,10 +131,10 @@ public class Main {
                 int id = 0;
                 while (cars.next()) {
                     id = cars.getInt("ID");
-                    String companyName = cars.getString("NAME");
-                    // TODO: It shal not be Car ID
-                    System.out.println(id + ". " + companyName);
+                    String carName = cars.getString("NAME");
+                    carList.add(new Car(id, carName, companyId));
                 }
+                IntStream.range(0, carList.size()).mapToObj(i -> (i + 1) + ". " + carList.get(i).getName()).forEach(System.out::println);
                 System.out.println("0. Back\n");
             }
         } catch (SQLException | NumberFormatException throwables) {
