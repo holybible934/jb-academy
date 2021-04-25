@@ -86,6 +86,7 @@ public class Main {
         while (carsOpt >= 0) {
             switch (carsOpt) {
                 case 1:
+                    printCarList(companyId);
                     break;
                 case 2:
                     break;
@@ -100,6 +101,26 @@ public class Main {
             carsOpt = Integer.parseInt(scanner.nextLine());
         }
     }
+
+    private static void printCarList(int companyId) {
+        try {
+            stmt = conn.createStatement();
+            String sql = "SELECT * FROM CAR;";
+            ResultSet cars = stmt.executeQuery(sql);
+            if (!cars.isBeforeFirst()) {
+                System.out.println("The car list is empty!");
+            } else {
+                System.out.println("\nCar list:");
+                int id = 0;
+                while (cars.next()) {
+                    id = cars.getInt("ID");
+                    String companyName = cars.getString("NAME");
+                    System.out.println(id + ". " + companyName);
+                }
+                System.out.println("0. Back");
+            }
+        } catch (SQLException | NumberFormatException throwables) {
+            throwables.printStackTrace();
         }
     }
 
