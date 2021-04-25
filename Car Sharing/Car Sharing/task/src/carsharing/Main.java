@@ -89,6 +89,7 @@ public class Main {
                     printCarList(companyId);
                     break;
                 case 2:
+                    createNewCar(companyId, scanner.nextLine());
                     break;
                 case 0:
                     return;
@@ -97,6 +98,21 @@ public class Main {
             }
             printCarsMenu(companyName);
             carsOpt = Integer.parseInt(scanner.nextLine());
+        }
+    }
+
+    private static void createNewCar(int companyId, String carName) {
+        try {
+            stmt = conn.createStatement();
+            String sql = "INSERT INTO CAR " +
+                    "(NAME, COMPANY_ID) VALUES ('" + carName + "', " +
+                    companyId + ");";
+            int rowCount = stmt.executeUpdate(sql);
+            if (rowCount > 0) {
+                System.out.println("The car was added!\n");
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
     }
 
