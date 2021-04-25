@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.IntStream;
 
 public class Main {
 
@@ -55,7 +56,7 @@ public class Main {
 
     private static void printCompanyList() {
         try {
-            List<String> companyList = new ArrayList<>();
+            List<Company> companyList = new ArrayList<>();
             stmt = conn.createStatement();
             String sql = "SELECT * FROM COMPANY;";
             ResultSet companies = stmt.executeQuery(sql);
@@ -63,16 +64,16 @@ public class Main {
                 System.out.println("The company list is empty!");
             } else {
                 System.out.println("\nChoose a company:");
-                int id = 0;
                 while (companies.next()) {
+                    int id = companies.getInt("ID");
                     String companyName = companies.getString("NAME");
-                    companyList.add(companyName);
-                    System.out.println(companyList.indexOf(companyName) + ". " + companyName);
+                    companyList.add(new Company(id, companyName));
                 }
-                System.out.println("0. Back");
+                IntStream.range(0, companyList.size()).mapToObj(i -> (i + 1) + ". " + companyList.get(i).getName()).forEach(System.out::println);
+                System.out.println("0. Back\n");
                 int chosenCompanyIndex = Integer.parseInt(scanner.nextLine());
                 if (chosenCompanyIndex != 0) {
-                    companyCarAction(companyList.get(chosenCompanyIndex));
+                    companyCarAction(companyList.get(chosenCompanyIndex - 1));
                 }
             }
         } catch (SQLException | NumberFormatException throwables) {
@@ -80,23 +81,24 @@ public class Main {
         }
     }
 
-    private static void companyCarAction(String companyName) {
-        printCarsMenu(companyName);
+    private static void companyCarAction(Company company) {
+        printCarsMenu(company.getName());
         int carsOpt = Integer.parseInt(scanner.nextLine());
         while (carsOpt >= 0) {
             switch (carsOpt) {
                 case 1:
-                    printCarList(companyId);
+                    printCarList(company.getId());
                     break;
                 case 2:
-                    createNewCar(companyId, scanner.nextLine());
+                    System.out.println("\nEnter the car name:");
+                    createNewCar(company.getId(), scanner.nextLine());
                     break;
                 case 0:
                     return;
                 default:
                     break;
             }
-            printCarsMenu(companyName);
+            printCarsMenu(company.getName());
             carsOpt = Integer.parseInt(scanner.nextLine());
         }
     }
@@ -118,20 +120,22 @@ public class Main {
 
     private static void printCarList(int companyId) {
         try {
+            List<Car> carList = new ArrayList<>();
             stmt = conn.createStatement();
-            String sql = "SELECT * FROM CAR;";
+            String sql = "SELECT * FROM CAR WHERE COMPANY_ID = " + companyId + " ;";
             ResultSet cars = stmt.executeQuery(sql);
             if (!cars.isBeforeFirst()) {
-                System.out.println("The car list is empty!");
+                System.out.println("The car list is empty!\n");
             } else {
                 System.out.println("\nCar list:");
                 int id = 0;
                 while (cars.next()) {
                     id = cars.getInt("ID");
                     String companyName = cars.getString("NAME");
+                    // TODO: It shal not be Car ID
                     System.out.println(id + ". " + companyName);
                 }
-                System.out.println("0. Back");
+                System.out.println("0. Back\n");
             }
         } catch (SQLException | NumberFormatException throwables) {
             throwables.printStackTrace();
