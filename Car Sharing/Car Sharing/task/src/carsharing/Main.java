@@ -93,8 +93,6 @@ public class Main {
                 case 0:
                     return;
                 default:
-                    printCarsMenu(companyName);
-                    carsOpt = Integer.parseInt(scanner.nextLine());
                     break;
             }
             printCarsMenu(companyName);
