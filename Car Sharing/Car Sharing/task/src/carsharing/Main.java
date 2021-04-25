@@ -72,7 +72,7 @@ public class Main {
                 System.out.println("0. Back");
                 int option = Integer.parseInt(scanner.nextLine());
                 if (option != 0) {
-                    companyCarAction(id, companyMap.get(id));
+                    companyCarAction(id, companyMap.get(id - 1));
                 }
             }
         } catch (SQLException | NumberFormatException throwables) {
@@ -204,9 +204,9 @@ public class Main {
             stmt = conn.createStatement();
             String sql = "CREATE TABLE CAR (" +
                     "ID INTEGER PRIMARY KEY AUTO_INCREMENT," +
-                    "NAME VARCHAR(255) NOT NULL UNIQUE" +
-                    "COMPANY_ID INTEGER NOT NULL" +
-                    "ADD CONSTRAINT FK_COMPANY_ID FOREIGN KEY (COMPANY_ID) REFERENCES COMPANY(ID)" +
+                    "NAME VARCHAR(255) NOT NULL UNIQUE," +
+                    "COMPANY_ID INTEGER NOT NULL," +
+                    "CONSTRAINT FK_COMPANY_ID FOREIGN KEY (COMPANY_ID) REFERENCES COMPANY(ID)" +
                     ");";
             stmt.executeUpdate(sql);
         } else {
