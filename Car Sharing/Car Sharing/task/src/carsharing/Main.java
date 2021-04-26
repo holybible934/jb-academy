@@ -49,15 +49,31 @@ public class Main {
                     default:
                         break;
                 }
-            } else if (mainOpt == 2){
+            } else if (mainOpt == 2) {
                 // TODO: Login as a customer
-            } else {
+            } else if (mainOpt == 3) {
                 // TODO: Create a customer
+                System.out.println("Enter the company name:");
+                createNewCustomer(scanner.nextLine());
             }
             printMainMenu();
             mainOpt = Integer.parseInt(scanner.nextLine());
         }
         exit();
+    }
+
+    private static void createNewCustomer(String customerName) {
+        try {
+            stmt = conn.createStatement();
+            String sql = "INSERT INTO CUSTOMER " +
+                    "(NAME, COMPANY_ID) VALUES ('" + customerName + "');";
+            int rowCount = stmt.executeUpdate(sql);
+            if (rowCount > 0) {
+                System.out.println("The customer was added!\n");
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 
     private static void printCompanyList() {
@@ -226,6 +242,23 @@ public class Main {
         }
     }
 
+    private static void createCustomerTable() throws SQLException {
+        ResultSet resultSet = conn.getMetaData().getTables(null, null, "CUSTOMER", null);
+        if (!resultSet.next()) {
+            System.out.println("Creating CUSTOMER table in given database...");
+            stmt = conn.createStatement();
+            String sql = "CREATE TABLE CUSTOMER (" +
+                    "ID INTEGER PRIMARY KEY AUTO_INCREMENT," +
+                    "NAME VARCHAR(255) NOT NULL UNIQUE," +
+                    "RENTED_CARD_ID INTEGER DEFAULT NULL," +
+                    "CONSTRAINT FK_RENTED_CAR_ID FOREIGN KEY (RENTED_CARD_ID) REFERENCES CAR(ID)" +
+                    ");";
+            stmt.executeUpdate(sql);
+        } else {
+            System.out.println("Table CAR already exists.");
+        }
+    }
+
     private static void connectToDb(String[] args) throws ClassNotFoundException, SQLException {
         // STEP 1: Register JDBC driver
         Class.forName(JDBC_DRIVER);
@@ -240,5 +273,6 @@ public class Main {
 //        System.out.println("Connected database successfully...");
         createCompanyTable();
         createCarTable();
+        createCustomerTable();
     }
 }
