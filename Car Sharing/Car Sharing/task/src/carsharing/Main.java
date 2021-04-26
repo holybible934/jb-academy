@@ -52,8 +52,7 @@ public class Main {
             } else if (mainOpt == 2) {
                 // TODO: Login as a customer
             } else if (mainOpt == 3) {
-                // TODO: Create a customer
-                System.out.println("Enter the company name:");
+                System.out.println("Enter the customer name:");
                 createNewCustomer(scanner.nextLine());
             }
             printMainMenu();
@@ -66,7 +65,7 @@ public class Main {
         try {
             stmt = conn.createStatement();
             String sql = "INSERT INTO CUSTOMER " +
-                    "(NAME, COMPANY_ID) VALUES ('" + customerName + "');";
+                    "(NAME) VALUES ('" + customerName + "');";
             int rowCount = stmt.executeUpdate(sql);
             if (rowCount > 0) {
                 System.out.println("The customer was added!\n");
