@@ -51,6 +51,7 @@ public class Main {
                 }
             } else if (mainOpt == 2) {
                 // TODO: Login as a customer
+                printCustomerList();
             } else if (mainOpt == 3) {
                 System.out.println("Enter the customer name:");
                 createNewCustomer(scanner.nextLine());
@@ -59,6 +60,59 @@ public class Main {
             mainOpt = Integer.parseInt(scanner.nextLine());
         }
         exit();
+    }
+
+    private static void printCustomerList() {
+        try {
+            List<Customer> customerList = new ArrayList<>();
+            stmt = conn.createStatement();
+            String sql = "SELECT * FROM CUSTOMER;";
+            ResultSet customers = stmt.executeQuery(sql);
+            if (!customers.isBeforeFirst()) {
+                System.out.println("The customer list is empty!");
+            } else {
+                System.out.println("\nCustomer list:");
+                while (customers.next()) {
+                    int id = customers.getInt("ID");
+                    String companyName = customers.getString("NAME");
+                    customerList.add(new Customer(id, companyName));
+                }
+                IntStream.range(0, customerList.size()).mapToObj(i -> (i + 1) + ". " + customerList.get(i).getName()).forEach(System.out::println);
+                System.out.println("0. Back\n");
+                int chosenCustomerIndex = Integer.parseInt(scanner.nextLine());
+                if (chosenCustomerIndex != 0) {
+                    carRentedCustomerAction(customerList.get(chosenCustomerIndex - 1));
+                }
+            }
+        } catch (SQLException | NumberFormatException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    private static void carRentedCustomerAction(Customer customer) {
+        printCustomerMenu();
+        int custOpt = Integer.parseInt(scanner.nextLine());
+        while (custOpt != 0) {
+            switch (custOpt) {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                default:
+                    break;
+            }
+            printCustomerMenu();
+            custOpt = Integer.parseInt(scanner.nextLine());
+        }
+    }
+
+    private static void printCustomerMenu() {
+        System.out.println("1. Rent a car\n" +
+                "2. Return a rented car\n" +
+                "3. My rented car\n" +
+                "0. Back");
     }
 
     private static void createNewCustomer(String customerName) {
