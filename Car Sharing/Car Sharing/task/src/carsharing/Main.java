@@ -92,20 +92,28 @@ public class Main {
     private static void carRentedCustomerAction(Customer customer) {
         printCustomerMenu();
         int custOpt = Integer.parseInt(scanner.nextLine());
-        while (custOpt != 0) {
+        while (custOpt >= 0) {
             switch (custOpt) {
                 case 1:
                     break;
                 case 2:
+                    returnRentedCar(customer);
+                    System.out.println("\nYou've returned a rented car!");
                     break;
                 case 3:
                     break;
+                case 0:
+                    return;
                 default:
                     break;
             }
             printCustomerMenu();
             custOpt = Integer.parseInt(scanner.nextLine());
         }
+    }
+
+    private static void returnRentedCar(Customer customer) {
+
     }
 
     private static void printCustomerMenu() {
