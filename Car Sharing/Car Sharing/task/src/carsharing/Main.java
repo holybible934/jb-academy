@@ -75,7 +75,11 @@ public class Main {
                 while (customers.next()) {
                     int id = customers.getInt("ID");
                     String companyName = customers.getString("NAME");
-                    customerList.add(new Customer(id, companyName));
+                    int rentedCarId = customers.getInt("RENTED_CAR_ID");
+                    if (customers.wasNull()) {
+                        rentedCarId = -1;
+                    }
+                    customerList.add(new Customer(id, companyName, rentedCarId));
                 }
                 IntStream.range(0, customerList.size()).mapToObj(i -> (i + 1) + ". " + customerList.get(i).getName()).forEach(System.out::println);
                 System.out.println("0. Back\n");
@@ -98,9 +102,9 @@ public class Main {
                     break;
                 case 2:
                     returnRentedCar(customer);
-                    System.out.println("\nYou've returned a rented car!");
                     break;
                 case 3:
+                    printMyRentedCar(customer);
                     break;
                 case 0:
                     return;
@@ -112,8 +116,39 @@ public class Main {
         }
     }
 
-    private static void returnRentedCar(Customer customer) {
+    private static void printMyRentedCar(Customer customer) {
+        try {
+            if (customer.getRentedCarId() == -1) {
+                System.out.println("\nYou didn't rent a car!");
+            } else {
+                stmt = conn.createStatement();
+                String sql = "SELECT * FROM CAR WHERE ID = " + customer.getRentedCarId() + ";";
+                ResultSet rentedCar = stmt.executeQuery(sql);
+                rentedCar.next();
+                String carName = rentedCar.getString("NAME");
+                int carId = rentedCar.getInt("ID");
+                stmt = conn.createStatement();
+                sql = "SELECT * FROM COMPANY WHERE ID = " + carId + ";";
+                ResultSet companyOfRentedCar = stmt.executeQuery(sql);
+                companyOfRentedCar.next();
+                String companyName = companyOfRentedCar.getString("NAME");
+                System.out.println("\nYour rented car:\n" + carName);
+                System.out.println("Company:\n" + companyName);
+            }
+        } catch (SQLException | NumberFormatException throwables) {
+            throwables.printStackTrace();
+        }
+    }
 
+    private static void returnRentedCar(Customer customer) {
+        try {
+            stmt = conn.createStatement();
+            String sql = "UPDATE CUSTOMER SET RENTED_CAR_ID = NULL WHERE ID = " + customer.getID() + ";";
+            stmt.executeUpdate(sql);
+            System.out.println("\nYou've returned a rented car!");
+        } catch (SQLException | NumberFormatException throwables) {
+            throwables.printStackTrace();
+        }
     }
 
     private static void printCustomerMenu() {
