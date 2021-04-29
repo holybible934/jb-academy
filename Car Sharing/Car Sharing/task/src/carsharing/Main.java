@@ -101,9 +101,11 @@ public class Main {
             switch (custOpt) {
                 case 1:
                     rentCar(customer);
+                    customer = renewCustomer(customer);
                     break;
                 case 2:
                     returnRentedCar(customer);
+                    customer = renewCustomer(customer);
                     break;
                 case 3:
                     printMyRentedCar(customer);
@@ -118,23 +120,49 @@ public class Main {
         }
     }
 
-    private static void rentCar(Customer customer) {
-        List<Company> companyList = getCompanyList();
-        int companyOpt = Integer.parseInt(scanner.nextLine());
-        while (companyOpt > 0) {
-            if (companyOpt <= companyList.size()) {
-                Company company = companyList.get(companyOpt - 1);
-                List<Car> carList = getCarList(company.getId());
-                int carOpt = Integer.parseInt(scanner.nextLine());
-                while (carOpt > 0) {
-                    if (carOpt <= carList.size()) {
-                        updateCustomerRentedCarId(customer, carList.get(carOpt - 1));
-                        return;
-                    }
-                    carOpt = Integer.parseInt(scanner.nextLine());
-                }
+    private static Customer renewCustomer(Customer customer) {
+        int id = 0;
+        String customerName = null;
+        int rentedCarId = 0;
+        try {
+            stmt = conn.createStatement();
+            String sql = "SELECT * FROM CUSTOMER WHERE ID = " + customer.getID() + ";";
+            ResultSet customers = stmt.executeQuery(sql);
+            customers.next();
+            id = customers.getInt("ID");
+            customerName = customers.getString("NAME");
+            rentedCarId = customers.getInt("RENTED_CAR_ID");
+            if (customers.wasNull()) {
+                rentedCarId = -1;
             }
-            companyOpt = Integer.parseInt(scanner.nextLine());
+        } catch (SQLException | NumberFormatException throwables) {
+            throwables.printStackTrace();
+        }
+//        System.out.println("id:" + id + " , customerName:" + customerName + ", rentedCarId:" + rentedCarId);
+        return new Customer(id, customerName, rentedCarId);
+    }
+
+    private static void rentCar(Customer customer) {
+        if (customer.getRentedCarId() != -1) {
+            System.out.println("\nYou've already rented a car!");
+        } else {
+            List<Company> companyList = getCompanyList();
+            int companyOpt = Integer.parseInt(scanner.nextLine());
+            while (companyOpt > 0) {
+                if (companyOpt <= companyList.size()) {
+                    Company company = companyList.get(companyOpt - 1);
+                    List<Car> carList = getCarList(company.getId());
+                    int carOpt = Integer.parseInt(scanner.nextLine());
+                    while (carOpt > 0) {
+                        if (carOpt <= carList.size()) {
+                            updateCustomerRentedCarId(customer, carList.get(carOpt - 1));
+                            return;
+                        }
+                        carOpt = Integer.parseInt(scanner.nextLine());
+                    }
+                }
+                companyOpt = Integer.parseInt(scanner.nextLine());
+            }
         }
     }
 
@@ -142,7 +170,7 @@ public class Main {
         List<Car> carList = new ArrayList<>();
         try {
             stmt = conn.createStatement();
-            String sql = "SELECT * FROM CAR WHERE COMPANY_ID = " + companyId + " ;";
+            String sql = "SELECT * FROM CAR WHERE COMPANY_ID = " + companyId + " AND IS_RENTED = FALSE;";
             ResultSet cars = stmt.executeQuery(sql);
             if (!cars.isBeforeFirst()) {
                 System.out.println("The car list is empty!\n");
@@ -190,9 +218,9 @@ public class Main {
     private static void updateCustomerRentedCarId(Customer customer, Car car) {
         try {
             stmt = conn.createStatement();
-            String sql = "UPDATE CUSTOMER SET RENTED_CAR_ID = " +
-                    car.getId() +
-                    " WHERE ID = " + customer.getID() + ";";
+            String sql = "UPDATE CUSTOMER SET RENTED_CAR_ID = " + car.getId() + " WHERE ID = " + customer.getID() + ";";
+            stmt.executeUpdate(sql);
+            sql = "UPDATE CAR SET IS_RENTED = TRUE WHERE ID = " + car.getId() + ";";
             stmt.executeUpdate(sql);
             System.out.println("\nYou rented '" + car.getName() + "'");
         } catch (SQLException | NumberFormatException throwables) {
@@ -210,14 +238,14 @@ public class Main {
                 ResultSet rentedCar = stmt.executeQuery(sql);
                 rentedCar.next();
                 String carName = rentedCar.getString("NAME");
-                int carId = rentedCar.getInt("ID");
+                int companyId = rentedCar.getInt("COMPANY_ID");
                 stmt = conn.createStatement();
-                sql = "SELECT * FROM COMPANY WHERE ID = " + carId + ";";
+                sql = "SELECT * FROM COMPANY WHERE ID = " + companyId + ";";
                 ResultSet companyOfRentedCar = stmt.executeQuery(sql);
                 companyOfRentedCar.next();
                 String companyName = companyOfRentedCar.getString("NAME");
                 System.out.println("\nYour rented car:\n" + carName);
-                System.out.println("Company:\n" + companyName);
+                System.out.println("Company:\n" + companyName + "\n");
             }
         } catch (SQLException | NumberFormatException throwables) {
             throwables.printStackTrace();
@@ -231,6 +259,8 @@ public class Main {
             } else {
                 stmt = conn.createStatement();
                 String sql = "UPDATE CUSTOMER SET RENTED_CAR_ID = NULL WHERE ID = " + customer.getID() + ";";
+                stmt.executeUpdate(sql);
+                sql = "UPDATE CAR SET IS_RENTED = FALSE WHERE ID = " + customer.getRentedCarId() + ";";
                 stmt.executeUpdate(sql);
                 System.out.println("\nYou've returned a rented car!");
             }
@@ -328,7 +358,7 @@ public class Main {
         List<Car> carList = new ArrayList<>();
         try {
             stmt = conn.createStatement();
-            String sql = "SELECT * FROM CAR WHERE COMPANY_ID = " + companyId + " ;";
+            String sql = "SELECT * FROM CAR WHERE COMPANY_ID = " + companyId + ";";
             ResultSet cars = stmt.executeQuery(sql);
             if (!cars.isBeforeFirst()) {
                 System.out.println("The car list is empty!\n");
@@ -417,6 +447,7 @@ public class Main {
             String sql = "CREATE TABLE CAR (" +
                     "ID INTEGER PRIMARY KEY AUTO_INCREMENT," +
                     "NAME VARCHAR(255) NOT NULL UNIQUE," +
+                    "IS_RENTED BOOLEAN DEFAULT FALSE," +
                     "COMPANY_ID INTEGER NOT NULL," +
                     "CONSTRAINT FK_COMPANY_ID FOREIGN KEY (COMPANY_ID) REFERENCES COMPANY(ID)" +
                     ");";
