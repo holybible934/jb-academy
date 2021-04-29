@@ -50,7 +50,6 @@ public class Main {
                         break;
                 }
             } else if (mainOpt == 2) {
-                // TODO: Login as a customer
                 printCustomerList();
             } else if (mainOpt == 3) {
                 System.out.println("Enter the customer name:");
@@ -99,6 +98,7 @@ public class Main {
         while (custOpt >= 0) {
             switch (custOpt) {
                 case 1:
+                    rentCar(customer);
                     break;
                 case 2:
                     returnRentedCar(customer);
@@ -113,6 +113,18 @@ public class Main {
             }
             printCustomerMenu();
             custOpt = Integer.parseInt(scanner.nextLine());
+        }
+    }
+
+    private static void rentCar(Customer customer) {
+        List<Company> companyList = printCompanyList();
+        int option = Integer.parseInt(scanner.nextLine());
+        while (option > 0) {
+            if (option <= companyList.size()) {
+                Company company = companyList.get(option - 1);
+                // TODO: choose a car, then update customer's rented car id
+            }
+            option = Integer.parseInt(scanner.nextLine());
         }
     }
 
@@ -172,9 +184,9 @@ public class Main {
         }
     }
 
-    private static void printCompanyList() {
+    private static List<Company> printCompanyList() {
+        List<Company> companyList = new ArrayList<>();
         try {
-            List<Company> companyList = new ArrayList<>();
             stmt = conn.createStatement();
             String sql = "SELECT * FROM COMPANY;";
             ResultSet companies = stmt.executeQuery(sql);
@@ -197,6 +209,7 @@ public class Main {
         } catch (SQLException | NumberFormatException throwables) {
             throwables.printStackTrace();
         }
+        return companyList;
     }
 
     private static void companyCarAction(Company company) {
@@ -236,9 +249,9 @@ public class Main {
         }
     }
 
-    private static void printCarList(int companyId) {
+    private static List<Car> printCarList(int companyId) {
+        List<Car> carList = new ArrayList<>();
         try {
-            List<Car> carList = new ArrayList<>();
             stmt = conn.createStatement();
             String sql = "SELECT * FROM CAR WHERE COMPANY_ID = " + companyId + " ;";
             ResultSet cars = stmt.executeQuery(sql);
@@ -258,6 +271,7 @@ public class Main {
         } catch (SQLException | NumberFormatException throwables) {
             throwables.printStackTrace();
         }
+        return carList;
     }
 
     private static void createNewCompany(String newCompanyName) {
