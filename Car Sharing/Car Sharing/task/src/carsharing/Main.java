@@ -36,23 +36,25 @@ public class Main {
             if (mainOpt == 1) {
                 printCompanyMenu();
                 int companyOpt = Integer.parseInt(scanner.nextLine());
-                switch (companyOpt) {
-                    case 1:
-                        printCompanyList();
-                        break;
-                    case 2:
-                        System.out.println("Enter the company name:");
-                        String newCompanyName = scanner.nextLine();
-                        createNewCompany(newCompanyName);
-                        break;
-                    case 0:
-                    default:
-                        break;
+                while (companyOpt > 0) {
+                    switch (companyOpt) {
+                        case 1:
+                            printCompanyList();
+                            break;
+                        case 2:
+                            System.out.println("\nEnter the company name:");
+                            String newCompanyName = scanner.nextLine();
+                            createNewCompany(newCompanyName);
+                            break;
+                        default:
+                            break;
+                    }
+                    companyOpt = Integer.parseInt(scanner.nextLine());
                 }
             } else if (mainOpt == 2) {
                 printCustomerList();
             } else if (mainOpt == 3) {
-                System.out.println("Enter the customer name:");
+                System.out.println("\nEnter the customer name:");
                 createNewCustomer(scanner.nextLine());
             }
             printMainMenu();
@@ -387,7 +389,7 @@ public class Main {
                     "ID INTEGER PRIMARY KEY AUTO_INCREMENT," +
                     "NAME VARCHAR(255) NOT NULL UNIQUE," +
                     "RENTED_CAR_ID INTEGER DEFAULT NULL," +
-                    "CONSTRAINT FK_RENTED_CAR_ID FOREIGN KEY (RENTED_CARD_ID) REFERENCES CAR(ID)" +
+                    "CONSTRAINT FK_RENTED_CAR_ID FOREIGN KEY (RENTED_CAR_ID) REFERENCES CAR(ID)" +
                     ");";
             stmt.executeUpdate(sql);
         } else {
