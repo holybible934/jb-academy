@@ -119,23 +119,72 @@ public class Main {
     }
 
     private static void rentCar(Customer customer) {
-        List<Company> companyList = printCompanyList();
+        List<Company> companyList = getCompanyList();
         int companyOpt = Integer.parseInt(scanner.nextLine());
         while (companyOpt > 0) {
             if (companyOpt <= companyList.size()) {
                 Company company = companyList.get(companyOpt - 1);
-                // TODO: choose a car, then update customer's rented car id
-                List<Car> carList = printCarList(company.getId(), "Choose a car:");
+                List<Car> carList = getCarList(company.getId());
                 int carOpt = Integer.parseInt(scanner.nextLine());
                 while (carOpt > 0) {
                     if (carOpt <= carList.size()) {
-                        updateCustomerRentedCarId(customer, carList.get(carOpt));
+                        updateCustomerRentedCarId(customer, carList.get(carOpt - 1));
+                        return;
                     }
                     carOpt = Integer.parseInt(scanner.nextLine());
                 }
             }
             companyOpt = Integer.parseInt(scanner.nextLine());
         }
+    }
+
+    private static List<Car> getCarList(int companyId) {
+        List<Car> carList = new ArrayList<>();
+        try {
+            stmt = conn.createStatement();
+            String sql = "SELECT * FROM CAR WHERE COMPANY_ID = " + companyId + " ;";
+            ResultSet cars = stmt.executeQuery(sql);
+            if (!cars.isBeforeFirst()) {
+                System.out.println("The car list is empty!\n");
+            } else {
+                System.out.println("\n" + "Choose a car:");
+                int id;
+                while (cars.next()) {
+                    id = cars.getInt("ID");
+                    String carName = cars.getString("NAME");
+                    carList.add(new Car(id, carName, companyId));
+                }
+                IntStream.range(0, carList.size()).mapToObj(i -> (i + 1) + ". " + carList.get(i).getName()).forEach(System.out::println);
+                System.out.println("0. Back\n");
+            }
+        } catch (SQLException | NumberFormatException throwables) {
+            throwables.printStackTrace();
+        }
+        return carList;
+    }
+
+    private static List<Company> getCompanyList() {
+        List<Company> companyList = new ArrayList<>();
+        try {
+            stmt = conn.createStatement();
+            String sql = "SELECT * FROM COMPANY;";
+            ResultSet companies = stmt.executeQuery(sql);
+            if (!companies.isBeforeFirst()) {
+                System.out.println("The company list is empty!");
+            } else {
+                System.out.println("\nChoose a company:");
+                while (companies.next()) {
+                    int id = companies.getInt("ID");
+                    String companyName = companies.getString("NAME");
+                    companyList.add(new Company(id, companyName));
+                }
+                IntStream.range(0, companyList.size()).mapToObj(i -> (i + 1) + ". " + companyList.get(i).getName()).forEach(System.out::println);
+                System.out.println("0. Back\n");
+            }
+        } catch (SQLException | NumberFormatException throwables) {
+            throwables.printStackTrace();
+        }
+        return companyList;
     }
 
     private static void updateCustomerRentedCarId(Customer customer, Car car) {
@@ -211,7 +260,7 @@ public class Main {
         }
     }
 
-    private static List<Company> printCompanyList() {
+    private static void printCompanyList() {
         List<Company> companyList = new ArrayList<>();
         try {
             stmt = conn.createStatement();
@@ -236,7 +285,6 @@ public class Main {
         } catch (SQLException | NumberFormatException throwables) {
             throwables.printStackTrace();
         }
-        return companyList;
     }
 
     private static void companyCarAction(Company company) {
@@ -245,7 +293,7 @@ public class Main {
         while (carsOpt >= 0) {
             switch (carsOpt) {
                 case 1:
-                    printCarList(company.getId(), "Car list:");
+                    printCarList(company.getId());
                     break;
                 case 2:
                     System.out.println("\nEnter the car name:");
@@ -276,21 +324,16 @@ public class Main {
         }
     }
 
-    private static List<Car> printCarList(int companyId, String msg) {
+    private static void printCarList(int companyId) {
         List<Car> carList = new ArrayList<>();
         try {
             stmt = conn.createStatement();
-            String sql;
-            if ("Car list:".equals(msg)) {
-                sql = "SELECT * FROM CAR WHERE COMPANY_ID = " + companyId + " ;";
-            } else {
-                sql = "SELECT * FROM CAR WHERE COMPANY_ID = " + companyId + "AND RENTED_CAR_ID IS NOT NULL;";
-            }
+            String sql = "SELECT * FROM CAR WHERE COMPANY_ID = " + companyId + " ;";
             ResultSet cars = stmt.executeQuery(sql);
             if (!cars.isBeforeFirst()) {
                 System.out.println("The car list is empty!\n");
             } else {
-                System.out.println("\n" + msg);
+                System.out.println("\n" + "Car list:");
                 int id;
                 while (cars.next()) {
                     id = cars.getInt("ID");
@@ -303,7 +346,6 @@ public class Main {
         } catch (SQLException | NumberFormatException throwables) {
             throwables.printStackTrace();
         }
-        return carList;
     }
 
     private static void createNewCompany(String newCompanyName) {
