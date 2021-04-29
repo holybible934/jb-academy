@@ -118,13 +118,34 @@ public class Main {
 
     private static void rentCar(Customer customer) {
         List<Company> companyList = printCompanyList();
-        int option = Integer.parseInt(scanner.nextLine());
-        while (option > 0) {
-            if (option <= companyList.size()) {
-                Company company = companyList.get(option - 1);
+        int companyOpt = Integer.parseInt(scanner.nextLine());
+        while (companyOpt > 0) {
+            if (companyOpt <= companyList.size()) {
+                Company company = companyList.get(companyOpt - 1);
                 // TODO: choose a car, then update customer's rented car id
+                List<Car> carList = printCarList(company.getId(), "Choose a car:");
+                int carOpt = Integer.parseInt(scanner.nextLine());
+                while (carOpt > 0) {
+                    if (carOpt <= carList.size()) {
+                        updateCustomerRentedCarId(customer, carList.get(carOpt));
+                    }
+                    carOpt = Integer.parseInt(scanner.nextLine());
+                }
             }
-            option = Integer.parseInt(scanner.nextLine());
+            companyOpt = Integer.parseInt(scanner.nextLine());
+        }
+    }
+
+    private static void updateCustomerRentedCarId(Customer customer, Car car) {
+        try {
+            stmt = conn.createStatement();
+            String sql = "UPDATE CUSTOMER SET RENTED_CAR_ID = " +
+                    car.getId() +
+                    " WHERE ID = " + customer.getID() + ";";
+            stmt.executeUpdate(sql);
+            System.out.println("\nYou rented '" + car.getName() + "'");
+        } catch (SQLException | NumberFormatException throwables) {
+            throwables.printStackTrace();
         }
     }
 
@@ -218,7 +239,7 @@ public class Main {
         while (carsOpt >= 0) {
             switch (carsOpt) {
                 case 1:
-                    printCarList(company.getId());
+                    printCarList(company.getId(), "Car list:");
                     break;
                 case 2:
                     System.out.println("\nEnter the car name:");
@@ -249,17 +270,22 @@ public class Main {
         }
     }
 
-    private static List<Car> printCarList(int companyId) {
+    private static List<Car> printCarList(int companyId, String msg) {
         List<Car> carList = new ArrayList<>();
         try {
             stmt = conn.createStatement();
-            String sql = "SELECT * FROM CAR WHERE COMPANY_ID = " + companyId + " ;";
+            String sql;
+            if ("Car list:".equals(msg)) {
+                sql = "SELECT * FROM CAR WHERE COMPANY_ID = " + companyId + " ;";
+            } else {
+                sql = "SELECT * FROM CAR WHERE COMPANY_ID = " + companyId + "AND RENTED_CAR_ID IS NOT NULL;";
+            }
             ResultSet cars = stmt.executeQuery(sql);
             if (!cars.isBeforeFirst()) {
                 System.out.println("The car list is empty!\n");
             } else {
-                System.out.println("\nCar list:");
-                int id = 0;
+                System.out.println("\n" + msg);
+                int id;
                 while (cars.next()) {
                     id = cars.getInt("ID");
                     String carName = cars.getString("NAME");
@@ -360,12 +386,12 @@ public class Main {
             String sql = "CREATE TABLE CUSTOMER (" +
                     "ID INTEGER PRIMARY KEY AUTO_INCREMENT," +
                     "NAME VARCHAR(255) NOT NULL UNIQUE," +
-                    "RENTED_CARD_ID INTEGER DEFAULT NULL," +
+                    "RENTED_CAR_ID INTEGER DEFAULT NULL," +
                     "CONSTRAINT FK_RENTED_CAR_ID FOREIGN KEY (RENTED_CARD_ID) REFERENCES CAR(ID)" +
                     ");";
             stmt.executeUpdate(sql);
         } else {
-            System.out.println("Table CAR already exists.");
+            System.out.println("Table CUSTOMER already exists.");
         }
     }
 
