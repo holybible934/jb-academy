@@ -177,10 +177,14 @@ public class Main {
 
     private static void returnRentedCar(Customer customer) {
         try {
-            stmt = conn.createStatement();
-            String sql = "UPDATE CUSTOMER SET RENTED_CAR_ID = NULL WHERE ID = " + customer.getID() + ";";
-            stmt.executeUpdate(sql);
-            System.out.println("\nYou've returned a rented car!");
+            if (customer.getRentedCarId() == -1) {
+                System.out.println("\nYou didn't rent a car!");
+            } else {
+                stmt = conn.createStatement();
+                String sql = "UPDATE CUSTOMER SET RENTED_CAR_ID = NULL WHERE ID = " + customer.getID() + ";";
+                stmt.executeUpdate(sql);
+                System.out.println("\nYou've returned a rented car!");
+            }
         } catch (SQLException | NumberFormatException throwables) {
             throwables.printStackTrace();
         }
